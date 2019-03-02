@@ -1,0 +1,58 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>test-agent-assembly</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>${basedir}/src/main/resources</directory>
+            <outputDirectory>./</outputDirectory>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <!--boot-test-1.0-SNAPSHOT.jar 核心启动jar包-->
+        <dependencySet>
+            <includes>
+                <include>top.huzhurong:boot-strap</include>
+            </includes>
+        </dependencySet>
+        <!--核心依赖jar包,打包到core目录下-->
+        <dependencySet>
+            <includes>
+                <include>top.huzhurong:boot-common</include>
+                <include>top.huzhurong:boot-core</include>
+            </includes>
+            <outputDirectory>core</outputDirectory>
+        </dependencySet>
+        <!--公共lib目录-->
+        <dependencySet>
+            <excludes>
+                <exclude>top.huzhurong:boot-test</exclude>
+                <exclude>top.huzhurong:boot-common</exclude>
+                <exclude>top.huzhurong:boot-core</exclude>
+                <exclude>*:pom</exclude>
+            </excludes>
+            <outputDirectory>lib</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+        </dependencySet>
+        <!--plugins 插件部分-->
+        <dependencySet>
+            <includes>
+                <include>top.huzhurong:plugins</include>
+            </includes>
+            <excludes>
+                <exclude>*:pom</exclude>
+            </excludes>
+            <outputDirectory>plugin</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>
