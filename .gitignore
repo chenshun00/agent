@@ -1,3 +1,11 @@
 .idea
 */**/*.iml
 agent.iml
+boot-agent/target/
+boot-common/target/
+boot-core/target/
+boot-strap/target/
+plugins/fast-json/target/
+plugins/mysql-plugin/target/
+plugins/target/
+profiler/target/

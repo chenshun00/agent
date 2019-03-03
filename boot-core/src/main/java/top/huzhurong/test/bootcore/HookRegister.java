@@ -1,7 +1,5 @@
 package top.huzhurong.test.bootcore;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -11,17 +9,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class HookRegister {
     private final static AtomicLong count = new AtomicLong(0);
 
-    private static Map<Long, Hook> hooks = new HashMap<Long, Hook>();
-
+    private static Hook[] hooks = new Hook[1024];
 
     public synchronized static long hookKey(Hook baseHook) {
         long key = count.incrementAndGet();
-        hooks.put(key, baseHook);
-
+        hooks[(int) key] = baseHook;
         return key;
     }
 
     public static Hook get(long key) {
-        return hooks.get(key);
+        return hooks[(int) key];
     }
 }
