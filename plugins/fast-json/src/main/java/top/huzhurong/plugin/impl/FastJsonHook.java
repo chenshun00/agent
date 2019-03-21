@@ -15,12 +15,12 @@ public class FastJsonHook implements BaseHook {
 
     @Override
     public void into(Object curObject, Object[] args) {
-        System.out.println("fast json into");
+
     }
 
     @Override
     public void out(Object result, Object cur, Object[] args) {
-        System.out.println("fast json out");
+
     }
 
     @Override

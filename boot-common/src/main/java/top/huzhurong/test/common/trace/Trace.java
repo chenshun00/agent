@@ -1,5 +1,6 @@
 package top.huzhurong.test.common.trace;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,10 +9,19 @@ import java.util.List;
  */
 public class Trace {
     private String traceId;
-    private List<Span> spans;
+    private Span rootSpan;
+    private List<Span> spans = new ArrayList<Span>(16);
 
     public String getTraceId() {
         return traceId;
+    }
+
+    public Span getRootSpan() {
+        return rootSpan;
+    }
+
+    public void setRootSpan(Span rootSpan) {
+        this.rootSpan = rootSpan;
     }
 
     public void setTraceId(String traceId) {

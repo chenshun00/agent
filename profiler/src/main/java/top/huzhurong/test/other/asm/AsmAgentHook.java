@@ -19,9 +19,11 @@ public class AsmAgentHook extends ClassVisitor {
     private BaseHook baseHook;
     private String methodName;
     private String desc;
+    private String className;
 
-    public AsmAgentHook(int api, ClassWriter classVisitor, BaseHook baseHook, String methodName, String desc) {
+    public AsmAgentHook(String className, int api, ClassWriter classVisitor, BaseHook baseHook, String methodName, String desc) {
         super(api, classVisitor);
+        this.className = className;
         this.baseHook = baseHook;
         this.methodName = methodName;
         this.desc = desc;

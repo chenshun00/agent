@@ -24,7 +24,7 @@ public class ASMCLass extends AbstractContext implements ASMContext {
     public byte[] tranform(BaseHook baseHook, String method, String desc) {
         ClassReader classReader = new ClassReader(classfileBuffer);
         ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-        classReader.accept(new AsmAgentHook(Opcodes.ASM5, classWriter, baseHook, method, desc), ClassReader.EXPAND_FRAMES);
+        classReader.accept(new AsmAgentHook(className, Opcodes.ASM5, classWriter, baseHook, method, desc), ClassReader.EXPAND_FRAMES);
         writeToFile(classWriter, className);
         return classWriter.toByteArray();
     }

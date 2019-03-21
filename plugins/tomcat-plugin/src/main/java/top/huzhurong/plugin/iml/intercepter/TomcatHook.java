@@ -4,6 +4,9 @@ import org.apache.catalina.connector.Request;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.apache.tomcat.util.http.MimeHeaders;
 import top.huzhurong.test.bootcore.BaseHook;
+import top.huzhurong.test.common.trace.Span;
+import top.huzhurong.test.common.trace.Trace;
+import top.huzhurong.test.common.trace.TraceContext;
 
 import java.util.UUID;
 
@@ -28,16 +31,32 @@ public final class TomcatHook implements BaseHook {
                 org.apache.coyote.Request coyoteRequest = request.getCoyoteRequest();
                 MimeHeaders mimeHeaders = coyoteRequest.getMimeHeaders();
                 MessageBytes traceHeader = mimeHeaders.addValue("traceId");
-                traceHeader.setString(UUID.randomUUID().toString());
-
-
+                traceId = UUID.randomUUID().toString();
+                traceHeader.setString(traceId);
+                //trace
+                Trace trace = TraceContext.getContext();
+                trace.setTraceId(traceId);
+                Span rootSpan = new Span();
+                rootSpan.setTag("tomcat");
+                rootSpan.setUrl(request.getDecodedRequestURI());
+                rootSpan.setsTime(System.currentTimeMillis());
+                rootSpan.setSpanId(UUID.randomUUID().toString());
+                trace.setRootSpan(rootSpan);
             }
         }
     }
 
     @Override
     public void out(Object result, Object cur, Object[] args) {
-        //计算耗时
+        try {
+            Trace context = TraceContext.getContext();
+            Span rootSpan = context.getRootSpan();
+            rootSpan.seteTime(System.currentTimeMillis());
+            //计算,写入定时线程队列，或是异步写入文件
+            System.out.println("请求url:" + rootSpan.getUrl() + "\t耗时:" + (rootSpan.geteTime() - rootSpan.getsTime()) + "(ms)");
+        } finally {
+            TraceContext.removeContext();
+        }
     }
 
     @Override

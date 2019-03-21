@@ -1,15 +1,18 @@
 package top.huzhurong.plugin.impl.intercepter;
 
 import com.mysql.jdbc.Buffer;
+import com.mysql.jdbc.PreparedStatement;
 import com.mysql.jdbc.ResultSetImpl;
 import com.mysql.jdbc.RowData;
 import top.huzhurong.test.bootcore.BaseHook;
-import top.huzhurong.test.common.HoldData;
-import top.huzhurong.test.common.ThreadData;
 import top.huzhurong.test.common.log.AgentLog;
 import top.huzhurong.test.common.log.PLoggerFactory;
+import top.huzhurong.test.common.trace.Span;
+import top.huzhurong.test.common.trace.TraceContext;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.util.UUID;
 
 
 /**
@@ -27,11 +30,25 @@ public class MysqlHook implements BaseHook {
 
     @Override
     public void into(Object curObject, Object[] args) {
-        Thread thread = Thread.currentThread();
-        ThreadData threadData = new ThreadData();
-        threadData.setCurTime(System.currentTimeMillis());
-        threadData.setKey(thread.getId());
-        HoldData.putData((int) thread.getId(), threadData);
+        String url = "";
+        try {
+            if (curObject instanceof PreparedStatement) {
+                PreparedStatement preparedStatement = (PreparedStatement) curObject;
+                Connection connection = preparedStatement.getConnection();
+                url = connection.getMetaData().getURL();
+            }
+        } catch (Exception ex) {
+            logger.error("获取sql URL为空:[{}]", ex.getMessage(), ex);
+        }
+        Span span = TraceContext.getSpan();
+        TraceContext.removeSpan();
+        Span newSpan = new Span();
+        newSpan.setUrl(url);
+        newSpan.setTag("Mysql");
+        newSpan.setSpanId(UUID.randomUUID().toString());
+        newSpan.setsTime(System.currentTimeMillis());
+        newSpan.setPspanId(span.getSpanId());
+        TraceContext.setSpan(span);
         if (curObject != null) {
             String ss = curObject.toString();
             if (ss.length() > 47 && ss.length() < 500) {
@@ -45,11 +62,9 @@ public class MysqlHook implements BaseHook {
 
     @Override
     public void out(Object result, Object cur, Object[] args) {
-        ThreadData andRemove = HoldData.getAndRemove((int) Thread.currentThread().getId());
-        long exe = 0L;
-        if (andRemove != null) {
-            exe = System.currentTimeMillis() - andRemove.getCurTime();
-        }
+        Span span = TraceContext.getSpan();
+        span.seteTime(System.currentTimeMillis());
+        long exe = span.geteTime() - span.getsTime();
         String sql = "";
         if (args[1] instanceof Buffer) {
             Buffer buffer = (Buffer) args[1];
@@ -84,7 +99,7 @@ public class MysqlHook implements BaseHook {
 
 
     //从字节数组中计算sql语句
-    public static String getSql(Buffer bufferr) {
+    static String getSql(Buffer bufferr) {
         StringBuilder buffer = new StringBuilder();
         byte[] getByteBuffers = bufferr.getByteBuffer();
         for (int i = 0; i < 4; ++i) {

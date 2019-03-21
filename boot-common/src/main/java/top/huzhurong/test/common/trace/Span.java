@@ -6,10 +6,21 @@ package top.huzhurong.test.common.trace;
  */
 public class Span {
     private String spanId;
-    private String pspanId;
+    private String pspanId = "-1";
     private String tag;
-    private String sTime;
-    private String eTime;
+    private String url;
+    private long sTime;
+    private long eTime;
+
+
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getSpanId() {
         return spanId;
@@ -35,19 +46,19 @@ public class Span {
         this.tag = tag;
     }
 
-    public String getsTime() {
+    public long getsTime() {
         return sTime;
     }
 
-    public void setsTime(String sTime) {
+    public void setsTime(long sTime) {
         this.sTime = sTime;
     }
 
-    public String geteTime() {
+    public long geteTime() {
         return eTime;
     }
 
-    public void seteTime(String eTime) {
+    public void seteTime(long eTime) {
         this.eTime = eTime;
     }
 }
