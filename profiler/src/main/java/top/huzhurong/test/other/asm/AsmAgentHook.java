@@ -39,7 +39,7 @@ public class AsmAgentHook extends ClassVisitor {
         MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
         if (baseHook != null && name.equalsIgnoreCase(this.methodName) && (this.desc == null || this.desc.equals(descriptor))) {
             logger.info("ASM 修改字节码 [{}] [{}] [{}]", this.methodName, this.desc, descriptor);
-            return new MethodAdviceAdapter(Opcodes.ASM5, mv, access, name, descriptor, baseHook);
+            return new MethodAdviceAdapter(api, mv, access, name, descriptor, baseHook);
         }
         return mv;
     }

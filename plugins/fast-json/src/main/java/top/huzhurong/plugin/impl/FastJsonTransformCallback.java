@@ -24,7 +24,7 @@ public class FastJsonTransformCallback implements ProfilerPlugin {
 
     public static class FastJsonCallback implements TransformCallback {
         @Override
-        public byte[] doInTransform(ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
+        public byte[] doInTransform(TranTemplate tranTemplate,ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             return asmContext.tranform(FastJsonHook.Instance, "write", "(Ljava/lang/Object;)V");
         }
     }

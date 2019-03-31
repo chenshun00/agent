@@ -14,6 +14,8 @@ public interface Hook {
     void into(Object curObject, Object[] args);
 
 
+    void into(int index, Object[] args);
+
     /**
      * 出去方法
      *
@@ -21,6 +23,8 @@ public interface Hook {
      * @param args 参数，如果没有参数，那么为null
      */
     void out(Object result, Object cur, Object[] args);
+
+    void out(Object result, int index, Object[] args);
 
 
     /**
@@ -32,4 +36,5 @@ public interface Hook {
      */
     void error(Throwable ex, Object curObject, Object[] args);
 
+    void error(Throwable ex, int index, Object[] args);
 }

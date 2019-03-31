@@ -32,5 +32,4 @@ public interface BaseHook extends Hook {
      * @param args      参数，如果没有参数，那么为null
      */
     void error(Throwable ex, Object curObject, Object[] args);
-
 }

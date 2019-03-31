@@ -6,6 +6,8 @@ import top.huzhurong.test.other.asm.AsmAgentHook;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
+import top.huzhurong.test.other.asm.BeanAgentHook;
+import top.huzhurong.test.other.asm.TraceClassWriter;
 
 /**
  * @author chenshun00@gmail.com
@@ -22,11 +24,29 @@ public class ASMCLass extends AbstractContext implements ASMContext {
     }
 
     public byte[] tranform(BaseHook baseHook, String method, String desc) {
-        ClassReader classReader = new ClassReader(classfileBuffer);
-        ClassWriter classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS);
-        classReader.accept(new AsmAgentHook(className, Opcodes.ASM5, classWriter, baseHook, method, desc), ClassReader.EXPAND_FRAMES);
-        writeToFile(classWriter, className);
-        return classWriter.toByteArray();
+       try {
+           ClassReader classReader = new ClassReader(classfileBuffer);
+           ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_FRAMES, this.getClass().getClassLoader());
+           classReader.accept(new AsmAgentHook(className, Opcodes.ASM7, classWriter, baseHook, method, desc), ClassReader.EXPAND_FRAMES);
+           writeToFile(classWriter, className);
+           return classWriter.toByteArray();
+       }catch (Exception ex){
+           ex.printStackTrace();
+           return null;
+       }
     }
 
+    @Override
+    public byte[] tranform(BaseHook baseHook) {
+       try {
+           ClassReader classReader = new ClassReader(classfileBuffer);
+           ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_FRAMES, this.getClass().getClassLoader());
+           classReader.accept(new BeanAgentHook(Opcodes.ASM7, classWriter, baseHook, className), ClassReader.EXPAND_FRAMES);
+           writeToFile(classWriter, className);
+           return classWriter.toByteArray();
+       }catch (Exception ex){
+           ex.printStackTrace();
+           return null;
+       }
+    }
 }

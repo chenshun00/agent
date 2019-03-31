@@ -1,7 +1,8 @@
 package top.huzhurong.test.common.trace;
 
-import java.util.ArrayList;
-import java.util.List;
+import top.huzhurong.test.common.storge.Storge;
+
+import java.util.UUID;
 
 /**
  * @author chenshun00@gmail.com
@@ -9,30 +10,49 @@ import java.util.List;
  */
 public class Trace {
     private String traceId;
-    private Span rootSpan;
-    private List<Span> spans = new ArrayList<Span>(16);
+    private String project;
+    private Span span;
+    private Storge<SpanEvent> storge;
+
+    public static Trace newTrace(String project) {
+        return new Trace(UUID.randomUUID().toString().replace("-", ""), project, StorgeFactory.getStorge());
+    }
+
+    public Trace(String traceId, String project, Storge storge) {
+        this.traceId = traceId;
+        this.project = project;
+        this.storge = storge;
+    }
+
+    public Storge<SpanEvent> getStorge() {
+        return storge;
+    }
+
+    public void setStorge(Storge storge) {
+        this.storge = storge;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public void setProject(String project) {
+        this.project = project;
+    }
 
     public String getTraceId() {
         return traceId;
-    }
-
-    public Span getRootSpan() {
-        return rootSpan;
-    }
-
-    public void setRootSpan(Span rootSpan) {
-        this.rootSpan = rootSpan;
     }
 
     public void setTraceId(String traceId) {
         this.traceId = traceId;
     }
 
-    public List<Span> getSpans() {
-        return spans;
+    public Span getSpan() {
+        return span;
     }
 
-    public void setSpans(List<Span> spans) {
-        this.spans = spans;
+    public void setSpan(Span span) {
+        this.span = span;
     }
 }

@@ -1,10 +1,10 @@
 package top.huzhurong.plugin.iml.intercepter;
 
 import org.apache.catalina.connector.Request;
-import org.apache.tomcat.util.buf.MessageBytes;
-import org.apache.tomcat.util.http.MimeHeaders;
 import top.huzhurong.test.bootcore.BaseHook;
+import top.huzhurong.test.common.storge.Storge;
 import top.huzhurong.test.common.trace.Span;
+import top.huzhurong.test.common.trace.SpanEvent;
 import top.huzhurong.test.common.trace.Trace;
 import top.huzhurong.test.common.trace.TraceContext;
 
@@ -28,39 +28,55 @@ public final class TomcatHook implements BaseHook {
             Request request = (Request) args[0];
             String traceId = request.getRequest().getHeader("traceId");
             if (traceId == null) {
-                org.apache.coyote.Request coyoteRequest = request.getCoyoteRequest();
-                MimeHeaders mimeHeaders = coyoteRequest.getMimeHeaders();
-                MessageBytes traceHeader = mimeHeaders.addValue("traceId");
-                traceId = UUID.randomUUID().toString();
-                traceHeader.setString(traceId);
-                //trace
                 Trace trace = TraceContext.getContext();
-                trace.setTraceId(traceId);
-                Span rootSpan = new Span();
-                rootSpan.setTag("tomcat");
-                rootSpan.setUrl(request.getDecodedRequestURI());
-                rootSpan.setsTime(System.currentTimeMillis());
-                rootSpan.setSpanId(UUID.randomUUID().toString());
-                trace.setRootSpan(rootSpan);
+                Span span = new Span();
+                span.setTag("tomcat");
+                span.setUrl(request.getDecodedRequestURI());
+                span.setsTime(System.currentTimeMillis());
+                span.setSpanId(UUID.randomUUID().toString().replaceAll("-", ""));
+                trace.setSpan(span);
+                SpanEvent spanEvent = new SpanEvent();
+                spanEvent.setClassName("org.apache.catalina.core.StandardWrapperValve");
+                spanEvent.setMethod("invoke");
+                spanEvent.setSpanId(span.getSpanId());
+                spanEvent.setStartTime(System.currentTimeMillis());
+                span.push(spanEvent);
             }
         }
+    }
+
+    @Override
+    public void into(int index, Object[] args) {
+
     }
 
     @Override
     public void out(Object result, Object cur, Object[] args) {
         try {
             Trace context = TraceContext.getContext();
-            Span rootSpan = context.getRootSpan();
-            rootSpan.seteTime(System.currentTimeMillis());
-            //计算,写入定时线程队列，或是异步写入文件
-            System.out.println("请求url:" + rootSpan.getUrl() + "\t耗时:" + (rootSpan.geteTime() - rootSpan.getsTime()) + "(ms)");
+            Span span = context.getSpan();
+            span.seteTime(System.currentTimeMillis());
+            SpanEvent pop = span.pop();
+            Storge<SpanEvent> storge = context.getStorge();
+            pop.setEndTime(System.currentTimeMillis());
+            storge.storgeInfo(pop);
         } finally {
             TraceContext.removeContext();
         }
     }
 
     @Override
+    public void out(Object result, int index, Object[] args) {
+
+    }
+
+    @Override
     public void error(Throwable ex, Object curObject, Object[] args) {
+
+    }
+
+    @Override
+    public void error(Throwable ex, int index, Object[] args) {
 
     }
 }

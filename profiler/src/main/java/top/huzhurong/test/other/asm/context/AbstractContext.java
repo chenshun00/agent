@@ -11,7 +11,7 @@ import java.io.IOException;
  * @since 2019/3/1
  */
 public abstract class AbstractContext implements ASMContext {
-    void writeToFile(ClassWriter classWriter, String name) {
+    public static void writeToFile(ClassWriter classWriter, String name) {
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(name.replaceAll("/", ".") + ".class");
             fileOutputStream.write(classWriter.toByteArray());

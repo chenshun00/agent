@@ -1,17 +1,15 @@
-package top.huzhurong.plugin.impl;
+package top.huzhurong.plugin.impl.spring;
 
 import top.huzhurong.test.bootcore.BaseHook;
+import top.huzhurong.test.bootcore.BeanMethodRegister;
 
 /**
  * @author chenshun00@gmail.com
- * @since 2019/2/24
+ * @since 2019/3/26
  */
-public class FastJsonHook implements BaseHook {
+public class BeanHook implements BaseHook {
 
-    private FastJsonHook() {
-    }
-
-    public static final FastJsonHook Instance = new FastJsonHook();
+    public static BeanHook Instance = new BeanHook();
 
     @Override
     public void into(Object curObject, Object[] args) {
@@ -20,17 +18,20 @@ public class FastJsonHook implements BaseHook {
 
     @Override
     public void into(int index, Object[] args) {
-
+        System.out.print("into \t");
+        System.out.println(BeanMethodRegister.get(index));
     }
 
     @Override
     public void out(Object result, Object cur, Object[] args) {
 
+
     }
 
     @Override
     public void out(Object result, int index, Object[] args) {
-
+        System.out.print("out\t");
+        System.out.println(BeanMethodRegister.get(index));
     }
 
     @Override

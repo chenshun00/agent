@@ -6,43 +6,40 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 import top.huzhurong.test.bootcore.BaseHook;
+import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.bootcore.HookRegister;
 
 /**
- * 调用方法的原则是先将参数入栈，然后在调用方法的时候一个一个的将参数从操作数栈中弹出，同时在方法的底部，即return的前一个指令，必然是返回值
- * 1、方法参数入栈，例如dup(),加入其他参数，ldc都可以
- * 2、调用方法 invoke，根据方法的描述符去栈顶拿参数
- *
  * @author chenshun00@gmail.com
- * @since 2018/9/29
+ * @since 2019/3/26
  */
-public class MethodAdviceAdapter extends AdviceAdapter {
+public class BeanMethodAdapter extends AdviceAdapter {
 
-    private long key;
-    private Label start;// 方法方法字节码开始位置
-    private Label end;// 方法方法字节码结束位置
+    private BaseHook baseHook;
+
+    private final int key;
+    private final long hookKey;
+    private Label start = new Label();
+    private Label end = new Label();
     private Label globalStart = new Label();// 方法方法字节码结束位置
     private Label globalEnd = new Label();// 方法方法字节码结束位置
     private int next;
     private int hook;
-    private int excep;
     private int result;
+    private int excep;
 
-    public MethodAdviceAdapter(int api, MethodVisitor methodVisitor, int access, String name, String descriptor, BaseHook baseHook) {
+
+    protected BeanMethodAdapter(int api, MethodVisitor methodVisitor, int access, String name, String descriptor, String className, BaseHook baseHook) {
         super(api, methodVisitor, access, name, descriptor);
-        key = HookRegister.hookKey(baseHook);
-        next = Type.getArgumentTypes(this.methodDesc).length + 20;
+        this.baseHook = baseHook;
+        key = BeanMethodRegister.hookKey(className, name);
+        hookKey = HookRegister.hookKey(baseHook);
+        next = Type.getArgumentTypes(this.methodDesc).length + 10;
         hook = next + 1;
         result = hook + 1;
         excep = result + 1;
     }
 
-    /**
-     * 添加一个局部变量，然后局部变量表的槽+1，
-     *
-     * @param name 变量名称
-     * @param desc 描述符
-     */
     private int loadParam(String name, String desc, Label start, Label end) {
         mv.visitLocalVariable(name, desc, null, start, end, hook);
         return hook;
@@ -54,11 +51,9 @@ public class MethodAdviceAdapter extends AdviceAdapter {
     @Override
     public void visitCode() {
         mv.visitCode();
-        start = new Label();
-        end = new Label();
-        loadParam("hook", "Ltop/huzhurong/test/bootcore/Hook;", globalStart, globalEnd);
 
-        mv.visitLdcInsn(key);
+        loadParam("hook", "Ltop/huzhurong/test/bootcore/Hook;", globalStart, globalEnd);
+        mv.visitLdcInsn(hookKey);
         mv.visitMethodInsn(INVOKESTATIC, "top/huzhurong/test/bootcore/HookRegister", "get", "(J)Ltop/huzhurong/test/bootcore/Hook;", false);
         mv.visitVarInsn(ASTORE, hook);
 
@@ -66,10 +61,12 @@ public class MethodAdviceAdapter extends AdviceAdapter {
 
         mv.visitVarInsn(ALOAD, hook);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "into", "(Ljava/lang/Object;[Ljava/lang/Object;)V", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "into", "(I[Ljava/lang/Object;)V", true);
 
         mv.visitLabel(start);
+
     }
+
 
     /**
      * 方法退出
@@ -90,7 +87,7 @@ public class MethodAdviceAdapter extends AdviceAdapter {
         mv.visitVarInsn(ALOAD, hook);
         mv.visitVarInsn(ALOAD, result);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "out", "(Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "out", "(Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
     }
 
     private void loadReturn(int opcode) {
@@ -119,7 +116,7 @@ public class MethodAdviceAdapter extends AdviceAdapter {
         mv.visitVarInsn(ALOAD,hook);
         mv.visitVarInsn(ALOAD, excep);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "error", "(Ljava/lang/Throwable;Ljava/lang/Object;[Ljava/lang/Object;)V", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "error", "(Ljava/lang/Throwable;I[Ljava/lang/Object;)V", true);
 
 
         mv.visitVarInsn(ALOAD, excep);
@@ -127,6 +124,9 @@ public class MethodAdviceAdapter extends AdviceAdapter {
         super.visitMaxs(-1, -1);
     }
 
+    //    /**
+//     * 最后包装一下异常，有可能开发人员会自己处理这个异常，重新将异常抛出
+//     */
     @Override
     public void visitEnd() {
         mark(globalEnd);
@@ -134,12 +134,7 @@ public class MethodAdviceAdapter extends AdviceAdapter {
     }
 
     private void insertParameter() {
-        //注入非static方法 参考Modifier#isStatic
-        if ((this.methodAccess & 0x00000008) == 0) {
-            loadThis();
-        } else {
-            mv.visitInsn(Opcodes.ACONST_NULL);
-        }
+        mv.visitLdcInsn(key);
         int size = Type.getArgumentTypes(this.methodDesc).length;
         if (size > 0) {
             loadArgArray();

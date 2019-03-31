@@ -57,7 +57,7 @@ public class DefaultTransformer implements ClassFileTransformer {
                 TransformCallbackProvider provider = new DynamicTransformCallbackProvider(tranCallback.getName(), this.agentOption);
                 TransformCallback transformCallback = provider.getTransformCallback(loader);
                 ASMContext asmContext = new ASMCLass(classfileBuffer, className);
-                return transformCallback.doInTransform(asmContext, loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
+                return transformCallback.doInTransform(this.tranTemplate,asmContext, loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
             } finally {
                 thread.setContextClassLoader(contextClassLoader);
             }

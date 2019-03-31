@@ -8,4 +8,6 @@ import top.huzhurong.test.bootcore.BaseHook;
  */
 public interface ASMContext {
     byte[] tranform(BaseHook baseHook, String method, String desc);
+
+    byte[] tranform(BaseHook baseHook);
 }

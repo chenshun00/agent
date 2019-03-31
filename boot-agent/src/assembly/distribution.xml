@@ -35,6 +35,11 @@
                 <exclude>top.huzhurong:boot-test</exclude>
                 <exclude>top.huzhurong:boot-common</exclude>
                 <exclude>top.huzhurong:boot-core</exclude>
+                <exclude>top.huzhurong:boot-strap</exclude>
+                <exclude>top.huzhurong:fast-json</exclude>
+                <exclude>top.huzhurong:mysql-plugin</exclude>
+                <exclude>top.huzhurong:spring-plugin</exclude>
+                <exclude>top.huzhurong:tomcat-plugin</exclude>
                 <exclude>*:pom</exclude>
             </excludes>
             <outputDirectory>lib</outputDirectory>

@@ -1,21 +1,38 @@
 package top.huzhurong.test.common.trace;
 
+import java.util.Stack;
+
 /**
  * @author chenshun00@gmail.com
  * @since 2019/3/3
  */
 public class Span {
     private String spanId;
-    private String pspanId = "-1";
-    private String tag;
+    private String parentSpanId;
     private String url;
+    private String tag;
     private long sTime;
     private long eTime;
+    private Stack<SpanEvent> spanEventStack = new Stack<SpanEvent>();
 
+    public void push(SpanEvent spanEvent) {
+        spanEventStack.push(spanEvent);
+    }
 
+    public SpanEvent pop() {
+        return spanEventStack.pop();
+    }
 
     public String getUrl() {
         return url;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public void setUrl(String url) {
@@ -30,20 +47,20 @@ public class Span {
         this.spanId = spanId;
     }
 
-    public String getPspanId() {
-        return pspanId;
+    public String getParentSpanId() {
+        return parentSpanId;
     }
 
-    public void setPspanId(String pspanId) {
-        this.pspanId = pspanId;
+    public void setParentSpanId(String parentSpanId) {
+        this.parentSpanId = parentSpanId;
     }
 
-    public String getTag() {
-        return tag;
+    public Stack<SpanEvent> getSpanEventStack() {
+        return spanEventStack;
     }
 
-    public void setTag(String tag) {
-        this.tag = tag;
+    public void setSpanEventStack(Stack<SpanEvent> spanEventStack) {
+        this.spanEventStack = spanEventStack;
     }
 
     public long getsTime() {
