@@ -8,6 +8,7 @@ import org.objectweb.asm.commons.AdviceAdapter;
 import top.huzhurong.test.bootcore.BaseHook;
 import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.bootcore.HookRegister;
+import top.huzhurong.test.bootcore.bean.BeanInfo;
 
 /**
  * @author chenshun00@gmail.com
@@ -15,26 +16,23 @@ import top.huzhurong.test.bootcore.HookRegister;
  */
 public class BeanMethodAdapter extends AdviceAdapter {
 
-    private BaseHook baseHook;
-
     private final int key;
-    private final long hookKey;
-    private Label start = new Label();
-    private Label end = new Label();
+    private final long hookIndex;
+    private Label start;
+    private Label end;
     private Label globalStart = new Label();// 方法方法字节码结束位置
     private Label globalEnd = new Label();// 方法方法字节码结束位置
-    private int next;
     private int hook;
     private int result;
     private int excep;
 
-
-    protected BeanMethodAdapter(int api, MethodVisitor methodVisitor, int access, String name, String descriptor, String className, BaseHook baseHook) {
+    protected BeanMethodAdapter(int api, MethodVisitor methodVisitor, int access, String name,
+                                String descriptor, String className, BaseHook baseHook) {
         super(api, methodVisitor, access, name, descriptor);
-        this.baseHook = baseHook;
+
         key = BeanMethodRegister.hookKey(className, name);
-        hookKey = HookRegister.hookKey(baseHook);
-        next = Type.getArgumentTypes(this.methodDesc).length + 10;
+        hookIndex = HookRegister.hookKey(baseHook);
+        int next = Type.getArgumentTypes(this.methodDesc).length + 1;
         hook = next + 1;
         result = hook + 1;
         excep = result + 1;
@@ -45,6 +43,13 @@ public class BeanMethodAdapter extends AdviceAdapter {
         return hook;
     }
 
+    @Override
+    public void visitLineNumber(int line, Label start) {
+        BeanInfo beanInfo = BeanMethodRegister.get(key);
+        beanInfo.setLineNumber(String.valueOf(line));
+        super.visitLineNumber(line, start);
+    }
+
     /**
      * 方法进入
      */
@@ -52,21 +57,26 @@ public class BeanMethodAdapter extends AdviceAdapter {
     public void visitCode() {
         mv.visitCode();
 
-        loadParam("hook", "Ltop/huzhurong/test/bootcore/Hook;", globalStart, globalEnd);
-        mv.visitLdcInsn(hookKey);
-        mv.visitMethodInsn(INVOKESTATIC, "top/huzhurong/test/bootcore/HookRegister", "get", "(J)Ltop/huzhurong/test/bootcore/Hook;", false);
-        mv.visitVarInsn(ASTORE, hook);
+        start = new Label();
+        end = new Label();
+        loadParam("hook", "Ltop/huzhurong/test/bootcore/BaseHook;", globalStart, globalEnd);
 
-        mv.visitLabel(globalStart);
+        load();
+
+        mark(globalStart);
 
         mv.visitVarInsn(ALOAD, hook);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "into", "(I[Ljava/lang/Object;)V", true);
-
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "into", "(Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
         mv.visitLabel(start);
-
     }
 
+
+    private void load() {
+        mv.visitLdcInsn(hookIndex);
+        mv.visitMethodInsn(INVOKESTATIC, "top/huzhurong/test/bootcore/HookRegister", "get", "(J)Ltop/huzhurong/test/bootcore/BaseHook;", false);
+        mv.visitVarInsn(ASTORE, hook);
+    }
 
     /**
      * 方法退出
@@ -83,11 +93,14 @@ public class BeanMethodAdapter extends AdviceAdapter {
         if (opcode == Opcodes.ATHROW) {
             return;
         }
+        load();
+
         loadReturn(opcode);
         mv.visitVarInsn(ALOAD, hook);
         mv.visitVarInsn(ALOAD, result);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "out", "(Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "out", "(Ljava/lang/Object;Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
+
     }
 
     private void loadReturn(int opcode) {
@@ -112,13 +125,11 @@ public class BeanMethodAdapter extends AdviceAdapter {
         mv.visitLabel(end);
         catchException(start, end, Type.getType(Throwable.class));
         mv.visitVarInsn(ASTORE, excep);
-
-        mv.visitVarInsn(ALOAD,hook);
+//
+        mv.visitVarInsn(ALOAD, hook);
         mv.visitVarInsn(ALOAD, excep);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "error", "(Ljava/lang/Throwable;I[Ljava/lang/Object;)V", true);
-
-
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "error", "(Ljava/lang/Throwable;Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
         mv.visitVarInsn(ALOAD, excep);
         mv.visitInsn(Opcodes.ATHROW);
         super.visitMaxs(-1, -1);
@@ -134,6 +145,12 @@ public class BeanMethodAdapter extends AdviceAdapter {
     }
 
     private void insertParameter() {
+        //注入非static方法 参考Modifier#isStatic
+        if ((this.methodAccess & 0x00000008) == 0) {
+            loadThis();
+        } else {
+            mv.visitInsn(Opcodes.ACONST_NULL);
+        }
         mv.visitLdcInsn(key);
         int size = Type.getArgumentTypes(this.methodDesc).length;
         if (size > 0) {

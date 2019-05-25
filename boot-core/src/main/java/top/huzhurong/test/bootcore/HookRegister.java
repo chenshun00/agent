@@ -9,15 +9,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class HookRegister {
     private final static AtomicLong count = new AtomicLong(0);
 
-    private static Hook[] hooks = new Hook[1024];
+    private static BaseHook[] hooks = new BaseHook[1024];
 
-    public synchronized static long hookKey(Hook baseHook) {
+    public synchronized static long hookKey(BaseHook baseHook) {
         long key = count.incrementAndGet();
         hooks[(int) key] = baseHook;
         return key;
     }
 
-    public static Hook get(long key) {
+    public static BaseHook get(long key) {
         return hooks[(int) key];
     }
 }

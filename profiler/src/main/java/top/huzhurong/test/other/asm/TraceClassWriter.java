@@ -5,19 +5,14 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 
 public class TraceClassWriter extends ClassWriter {
-    ClassLoader loader;
+    private ClassLoader loader;
 
-    /**
-     * 针对父类
-     * @param classReader
-     * @param flags
-     * @param loader
-     */
     public TraceClassWriter(ClassReader classReader, int flags, ClassLoader loader) {
         super(classReader, flags);
         this.loader = loader;
     }
 
+    @SuppressWarnings("unchecked")
     protected String getCommonSuperClass(final String type1, final String type2) {
         Class c, d;
         try {
@@ -26,6 +21,7 @@ public class TraceClassWriter extends ClassWriter {
         } catch (Exception e) {
             throw new RuntimeException(e.toString());
         }
+
         if (c.isAssignableFrom(d)) {
             return type1;
         }

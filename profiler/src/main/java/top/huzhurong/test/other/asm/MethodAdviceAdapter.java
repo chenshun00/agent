@@ -6,7 +6,9 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.AdviceAdapter;
 import top.huzhurong.test.bootcore.BaseHook;
+import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.bootcore.HookRegister;
+import top.huzhurong.test.bootcore.bean.BeanInfo;
 
 /**
  * 调用方法的原则是先将参数入栈，然后在调用方法的时候一个一个的将参数从操作数栈中弹出，同时在方法的底部，即return的前一个指令，必然是返回值
@@ -19,6 +21,7 @@ import top.huzhurong.test.bootcore.HookRegister;
 public class MethodAdviceAdapter extends AdviceAdapter {
 
     private long key;
+    private int methodKey;
     private Label start;// 方法方法字节码开始位置
     private Label end;// 方法方法字节码结束位置
     private Label globalStart = new Label();// 方法方法字节码结束位置
@@ -28,10 +31,11 @@ public class MethodAdviceAdapter extends AdviceAdapter {
     private int excep;
     private int result;
 
-    public MethodAdviceAdapter(int api, MethodVisitor methodVisitor, int access, String name, String descriptor, BaseHook baseHook) {
+    public MethodAdviceAdapter(int api, MethodVisitor methodVisitor, int access, String name, String descriptor, BaseHook baseHook, String className) {
         super(api, methodVisitor, access, name, descriptor);
+        methodKey = BeanMethodRegister.hookKey(className, name);
         key = HookRegister.hookKey(baseHook);
-        next = Type.getArgumentTypes(this.methodDesc).length + 20;
+        next = Type.getArgumentTypes(this.methodDesc).length + 1;
         hook = next + 1;
         result = hook + 1;
         excep = result + 1;
@@ -66,9 +70,16 @@ public class MethodAdviceAdapter extends AdviceAdapter {
 
         mv.visitVarInsn(ALOAD, hook);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "into", "(Ljava/lang/Object;[Ljava/lang/Object;)V", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "into", "(Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
 
         mv.visitLabel(start);
+    }
+
+    @Override
+    public void visitLineNumber(int line, Label start) {
+        BeanInfo beanInfo = BeanMethodRegister.get(methodKey);
+        beanInfo.setLineNumber(String.valueOf(line));
+        super.visitLineNumber(line, start);
     }
 
     /**
@@ -86,11 +97,15 @@ public class MethodAdviceAdapter extends AdviceAdapter {
         if (opcode == Opcodes.ATHROW) {
             return;
         }
+        mv.visitLdcInsn(key);
+        mv.visitMethodInsn(INVOKESTATIC, "top/huzhurong/test/bootcore/HookRegister", "get", "(J)Ltop/huzhurong/test/bootcore/Hook;", false);
+        mv.visitVarInsn(ASTORE, hook);
+
         loadReturn(opcode);
         mv.visitVarInsn(ALOAD, hook);
         mv.visitVarInsn(ALOAD, result);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "out", "(Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "out", "(Ljava/lang/Object;Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
     }
 
     private void loadReturn(int opcode) {
@@ -116,10 +131,10 @@ public class MethodAdviceAdapter extends AdviceAdapter {
         catchException(start, end, Type.getType(Throwable.class));
         mv.visitVarInsn(ASTORE, excep);
 
-        mv.visitVarInsn(ALOAD,hook);
+        mv.visitVarInsn(ALOAD, hook);
         mv.visitVarInsn(ALOAD, excep);
         insertParameter();
-        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "error", "(Ljava/lang/Throwable;Ljava/lang/Object;[Ljava/lang/Object;)V", true);
+        mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "error", "(Ljava/lang/Throwable;Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
 
 
         mv.visitVarInsn(ALOAD, excep);
@@ -140,6 +155,7 @@ public class MethodAdviceAdapter extends AdviceAdapter {
         } else {
             mv.visitInsn(Opcodes.ACONST_NULL);
         }
+        mv.visitLdcInsn(methodKey);
         int size = Type.getArgumentTypes(this.methodDesc).length;
         if (size > 0) {
             loadArgArray();

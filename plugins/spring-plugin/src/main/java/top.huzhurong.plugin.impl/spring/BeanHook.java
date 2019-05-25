@@ -12,35 +12,17 @@ public class BeanHook implements BaseHook {
     public static BeanHook Instance = new BeanHook();
 
     @Override
-    public void into(Object curObject, Object[] args) {
-
+    public void into(Object curObject, int index, Object[] args) {
+        System.out.println("into \t" + BeanMethodRegister.get(index).toString());
     }
 
     @Override
-    public void into(int index, Object[] args) {
-        System.out.print("into \t");
-        System.out.println(BeanMethodRegister.get(index));
+    public void out(Object result, Object cur, int index, Object[] args) {
+        System.out.println("out\t" + BeanMethodRegister.get(index).toString());
     }
 
     @Override
-    public void out(Object result, Object cur, Object[] args) {
-
-
-    }
-
-    @Override
-    public void out(Object result, int index, Object[] args) {
-        System.out.print("out\t");
-        System.out.println(BeanMethodRegister.get(index));
-    }
-
-    @Override
-    public void error(Throwable ex, Object curObject, Object[] args) {
-
-    }
-
-    @Override
-    public void error(Throwable ex, int index, Object[] args) {
+    public void error(Throwable ex,  Object curObject,int index, Object[] args) {
 
     }
 }

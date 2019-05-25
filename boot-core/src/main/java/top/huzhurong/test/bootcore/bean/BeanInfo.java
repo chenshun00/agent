@@ -8,6 +8,8 @@ public class BeanInfo {
     private String className;
     private String methodName;
 
+    private String lineNumber;
+
     public BeanInfo(String className, String methodName) {
         this.className = className;
         this.methodName = methodName;
@@ -21,16 +23,12 @@ public class BeanInfo {
         this.className = className;
     }
 
-    public String getMethodName() {
-        return methodName;
-    }
-
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
+    public void setLineNumber(String lineNumber) {
+        this.lineNumber = lineNumber;
     }
 
     @Override
     public String toString() {
-        return className + ":" + methodName;
+        return className.replaceAll("/", ".") + ":" + methodName + "\tlineNumber:" + lineNumber;
     }
 }

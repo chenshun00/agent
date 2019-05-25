@@ -22,11 +22,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.raycloud.message</groupId>-->
-            <!--<artifactId>chat-web</artifactId>-->
-            <!--<version>1.0-SNAPSHOT</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>top.huzhurong</groupId>
             <artifactId>profiler</artifactId>

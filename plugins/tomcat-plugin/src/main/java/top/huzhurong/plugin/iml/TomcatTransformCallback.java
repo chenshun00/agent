@@ -16,13 +16,13 @@ import java.security.ProtectionDomain;
 public class TomcatTransformCallback implements ProfilerPlugin {
     @Override
     public void setTemplate(TranTemplate template) {
-//        template.addTranCallback(JvmUtil.jvmName("org.apache.catalina.core.StandardWrapperValve"), TomcatCallback.class);
+        template.addTranCallback(JvmUtil.jvmName("org.apache.catalina.core.StandardWrapperValve"), TomcatCallback.class);
     }
 
 
     public static class TomcatCallback implements TransformCallback {
         @Override
-        public byte[] doInTransform(TranTemplate tranTemplate,ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
+        public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             return asmContext.tranform(TomcatHook.Instance, "invoke", "(Lorg/apache/catalina/connector/Request;Lorg/apache/catalina/connector/Response;)V");
         }
     }

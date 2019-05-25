@@ -17,8 +17,6 @@ import java.util.Set;
  */
 public class SpringHook implements BaseHook {
 
-    private AgentLog logger = PLoggerFactory.getLogger(this.getClass());
-
     private TranTemplate tranTemplate;
 
     public SpringHook(TranTemplate tranTemplate) {
@@ -27,18 +25,14 @@ public class SpringHook implements BaseHook {
 
     public static SpringHook Instance = null;
 
+
     @Override
-    public void into(Object curObject, Object[] args) {
+    public void into(Object curObject, int index, Object[] args) {
 
     }
 
     @Override
-    public void into(int index, Object[] args) {
-
-    }
-
-    @Override
-    public void out(Object result, Object cur, Object[] args) {
+    public void out(Object result, Object cur, int index, Object[] args) {
         if (result instanceof Set) {
             Set set = (Set) result;
             for (Object aSet : set) {
@@ -53,17 +47,7 @@ public class SpringHook implements BaseHook {
     }
 
     @Override
-    public void out(Object result, int index, Object[] args) {
-
-    }
-
-    @Override
-    public void error(Throwable ex, Object curObject, Object[] args) {
-
-    }
-
-    @Override
-    public void error(Throwable ex, int index, Object[] args) {
+    public void error(Throwable ex, Object curObject, int index, Object[] args) {
 
     }
 }
