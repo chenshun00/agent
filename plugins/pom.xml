@@ -19,6 +19,8 @@
         <module>fast-json</module>
         <module>tomcat-plugin</module>
         <module>spring-plugin</module>
+        <module>mybatis-plugin</module>
+        <module>ibatis-plugin</module>
     </modules>
 
 
