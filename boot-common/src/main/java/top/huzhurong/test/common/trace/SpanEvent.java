@@ -10,7 +10,7 @@ public class SpanEvent {
     private long endTime;
     private String className;
     private String method;
-    private int line;
+    private String line;
     private String param;
 
     public String getSpanId() {
@@ -53,11 +53,11 @@ public class SpanEvent {
         this.method = method;
     }
 
-    public int getLine() {
+    public String getLine() {
         return line;
     }
 
-    public void setLine(int line) {
+    public void setLine(String line) {
         this.line = line;
     }
 
@@ -67,5 +67,16 @@ public class SpanEvent {
 
     public void setParam(String param) {
         this.param = param;
+    }
+
+    @Override
+    public String toString() {
+        return "SpanEvent{" +
+                "spanId='" + spanId + '\'' +
+                ", duration=" + (endTime - startTime) + "(ms)" +
+                ", className='" + className + '\'' +
+                ", method='" + method + '\'' +
+                ", line='" + line + '\'' +
+                '}';
     }
 }

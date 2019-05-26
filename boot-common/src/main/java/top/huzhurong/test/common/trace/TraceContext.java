@@ -12,7 +12,7 @@ public class TraceContext {
     private static final ThreadLocal<Trace> threadLocal = new ThreadLocal<Trace>() {
         @Override
         protected Trace initialValue() {
-            return Trace.newTrace(System.getProperty("project"));
+            return Trace.newTrace(null);
         }
     };
 

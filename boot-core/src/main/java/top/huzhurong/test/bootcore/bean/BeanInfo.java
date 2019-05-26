@@ -11,7 +11,7 @@ public class BeanInfo {
     private String lineNumber;
 
     public BeanInfo(String className, String methodName) {
-        this.className = className;
+        this.className = className.replaceAll("/", ".");
         this.methodName = methodName;
     }
 
@@ -25,6 +25,14 @@ public class BeanInfo {
 
     public void setLineNumber(String lineNumber) {
         this.lineNumber = lineNumber;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public String getLineNumber() {
+        return lineNumber;
     }
 
     @Override

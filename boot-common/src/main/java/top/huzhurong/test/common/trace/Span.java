@@ -1,18 +1,20 @@
 package top.huzhurong.test.common.trace;
 
 import java.util.Stack;
+import java.util.UUID;
 
 /**
  * @author chenshun00@gmail.com
  * @since 2019/3/3
  */
 public class Span {
-    private String spanId;
-    private String parentSpanId;
     private String url;
+    private String node = "1";
+    private String spanId = UUID.randomUUID().toString().replaceAll("-", "");
+    private String parentSpanId = null;
     private String tag;
-    private long sTime;
-    private long eTime;
+    private long startTime = System.currentTimeMillis();
+    private long endTIme;
     private Stack<SpanEvent> spanEventStack = new Stack<SpanEvent>();
 
     public void push(SpanEvent spanEvent) {
@@ -23,20 +25,12 @@ public class Span {
         return spanEventStack.pop();
     }
 
-    public String getUrl() {
-        return url;
-    }
-
     public String getTag() {
         return tag;
     }
 
     public void setTag(String tag) {
         this.tag = tag;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
     }
 
     public String getSpanId() {
@@ -63,19 +57,35 @@ public class Span {
         this.spanEventStack = spanEventStack;
     }
 
-    public long getsTime() {
-        return sTime;
+    public long getStartTime() {
+        return startTime;
     }
 
-    public void setsTime(long sTime) {
-        this.sTime = sTime;
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
 
-    public long geteTime() {
-        return eTime;
+    public long getEndTIme() {
+        return endTIme;
     }
 
-    public void seteTime(long eTime) {
-        this.eTime = eTime;
+    public void setEndTIme(long endTIme) {
+        this.endTIme = endTIme;
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
