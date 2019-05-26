@@ -33,7 +33,8 @@ public class MysqlTransformCallback implements ProfilerPlugin {
     public static class MysqlCallback implements TransformCallback {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate,ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-            return asmContext.tranform(MysqlHook.Instance, "executeInternal", null);
+            String[] method = {"executeInternal"};
+            return asmContext.tranform(MysqlHook.Instance, method, null);
         }
     }
 }

@@ -5,11 +5,11 @@ import top.huzhurong.test.bootcore.BeanMethodRegister;
 
 /**
  * @author chenshun00@gmail.com
- * @since 2019/5/25
+ * @since 2019/5/26
  */
-public class MybatisHook implements BaseHook {
+public class DubboProviderHook implements BaseHook {
 
-    public static MybatisHook Instance = new MybatisHook();
+    public static DubboConsumerHook Instance = new DubboConsumerHook();
 
     @Override
     public void into(Object curObject, int index, Object[] args) {

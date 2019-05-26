@@ -23,7 +23,8 @@ public class TomcatTransformCallback implements ProfilerPlugin {
     public static class TomcatCallback implements TransformCallback {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-            return asmContext.tranform(TomcatHook.Instance, "invoke", "(Lorg/apache/catalina/connector/Request;Lorg/apache/catalina/connector/Response;)V");
+            String[] method = {"invoke"};
+            return asmContext.tranform(TomcatHook.Instance, method, "(Lorg/apache/catalina/connector/Request;Lorg/apache/catalina/connector/Response;)V");
         }
     }
 }

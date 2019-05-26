@@ -26,7 +26,8 @@ public class SpringTransformCallback implements ProfilerPlugin {
             if (SpringHook.Instance == null) {
                 SpringHook.Instance = new SpringHook(tranTemplate);
             }
-            return asmContext.tranform(SpringHook.Instance, "doScan", "([Ljava/lang/String;)Ljava/util/Set;");
+            String[] method = {"doScan"};
+            return asmContext.tranform(SpringHook.Instance, method, "([Ljava/lang/String;)Ljava/util/Set;");
         }
     }
 }

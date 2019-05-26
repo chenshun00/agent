@@ -26,20 +26,13 @@ public class IbatisTransformCallback implements ProfilerPlugin {
         }
         logger.info("[增加mybatis回调处理]");
         template.addTranCallback(JvmUtil.jvmName("com.ibatis.sqlmap.engine.execution.SqlExecutor"), IbatisTransformCallback.IbatisUpdate.class);
-        template.addTranCallback(JvmUtil.jvmName("com.ibatis.sqlmap.engine.execution.SqlExecutor"), IbatisTransformCallback.IbatisQuery.class);
     }
 
     public static class IbatisUpdate implements TransformCallback {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-            return asmContext.tranform(IbatisHook.Instance, "executeUpdate", null);
-        }
-    }
-
-    public static class IbatisQuery implements TransformCallback {
-        @Override
-        public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-            return asmContext.tranform(IbatisHook.Instance, "executeQuery", null);
+            String[] method = {"executeUpdate", "executeQuery"};
+            return asmContext.tranform(IbatisHook.Instance, method, null);
         }
     }
 }

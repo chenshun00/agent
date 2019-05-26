@@ -40,6 +40,10 @@
                 <exclude>top.huzhurong:mysql-plugin</exclude>
                 <exclude>top.huzhurong:spring-plugin</exclude>
                 <exclude>top.huzhurong:tomcat-plugin</exclude>
+                <exclude>top.huzhurong:druid-plugin</exclude>
+                <exclude>top.huzhurong:dubbo-plugin</exclude>
+                <exclude>top.huzhurong:ibatis-plugin</exclude>
+                <exclude>top.huzhurong:mybatis-plugin</exclude>
                 <exclude>*:pom</exclude>
             </excludes>
             <outputDirectory>lib</outputDirectory>

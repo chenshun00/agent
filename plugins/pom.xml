@@ -21,6 +21,8 @@
         <module>spring-plugin</module>
         <module>mybatis-plugin</module>
         <module>ibatis-plugin</module>
+        <module>druid-plugin</module>
+        <module>dubbo-plugin</module>
     </modules>
 
 
@@ -46,6 +48,30 @@
         <dependency>
             <groupId>top.huzhurong</groupId>
             <artifactId>spring-plugin</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.huzhurong</groupId>
+            <artifactId>druid-plugin</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.huzhurong</groupId>
+            <artifactId>dubbo-plugin</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.huzhurong</groupId>
+            <artifactId>ibatis-plugin</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.huzhurong</groupId>
+            <artifactId>mybatis-plugin</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

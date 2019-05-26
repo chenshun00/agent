@@ -7,7 +7,7 @@ import top.huzhurong.test.bootcore.BaseHook;
  * @since 2019/2/21
  */
 public interface ASMContext {
-    byte[] tranform(BaseHook baseHook, String method, String desc);
+    byte[] tranform(BaseHook baseHook, String[] method, String desc);
 
     byte[] tranform(BaseHook baseHook);
 }

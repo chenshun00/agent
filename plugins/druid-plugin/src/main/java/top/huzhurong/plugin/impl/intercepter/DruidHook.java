@@ -7,9 +7,9 @@ import top.huzhurong.test.bootcore.BeanMethodRegister;
  * @author chenshun00@gmail.com
  * @since 2019/5/25
  */
-public class MybatisHook implements BaseHook {
+public class DruidHook implements BaseHook {
 
-    public static MybatisHook Instance = new MybatisHook();
+    public static DruidHook Instance = new DruidHook();
 
     @Override
     public void into(Object curObject, int index, Object[] args) {

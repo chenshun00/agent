@@ -1,12 +1,14 @@
 package top.huzhurong.test.other.asm;
 
-import top.huzhurong.test.bootcore.BaseHook;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.huzhurong.test.bootcore.BaseHook;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author chenshun00@gmail.com
@@ -17,15 +19,15 @@ public class AsmAgentHook extends ClassVisitor {
     private Logger logger = LoggerFactory.getLogger(AsmAgentHook.class);
 
     private BaseHook baseHook;
-    private String methodName;
+    private List<String> methodName;
     private String desc;
     private String className;
 
-    public AsmAgentHook(String className, int api, ClassWriter classVisitor, BaseHook baseHook, String methodName, String desc) {
+    public AsmAgentHook(String className, int api, ClassWriter classVisitor, BaseHook baseHook, String[] methodName, String desc) {
         super(api, classVisitor);
         this.className = className;
         this.baseHook = baseHook;
-        this.methodName = methodName;
+        this.methodName = Arrays.asList(methodName);
         this.desc = desc;
     }
 
@@ -37,8 +39,8 @@ public class AsmAgentHook extends ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
-        if (baseHook != null && name.equalsIgnoreCase(this.methodName) && (this.desc == null || this.desc.equals(descriptor))) {
-            logger.info("ASM 修改字节码 [{}] [{}] [{}]", this.methodName, this.desc, descriptor);
+        if (baseHook != null && this.methodName.contains(name) && (this.desc == null || this.desc.equals(descriptor))) {
+            logger.info("ASM 修改字节码 [{}] [{}] [{}]", name, this.desc, descriptor);
             return new BeanMethodAdapter(api, mv, access, name, descriptor, className, baseHook);
         }
         return mv;

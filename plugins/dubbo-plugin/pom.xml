@@ -10,7 +10,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mybatis-plugin</artifactId>
+    <artifactId>dubbo-plugin</artifactId>
+
     <build>
         <plugins>
             <plugin>
@@ -33,11 +34,12 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.4.0</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dubbo</artifactId>
+            <version>2.4.9</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
 
 </project>

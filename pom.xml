@@ -16,5 +16,6 @@
         <module>boot-common</module>
         <module>plugins</module>
         <module>boot-agent</module>
+        <module>boot-collect</module>
     </modules>
 </project>

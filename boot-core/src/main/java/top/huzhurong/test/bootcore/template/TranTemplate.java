@@ -4,6 +4,7 @@ import top.huzhurong.test.bootcore.TransformCallback;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * @author chenshun00@gmail.com
