@@ -66,21 +66,24 @@ public class DynamicTransformCallbackProvider implements TransformCallbackProvid
     public <T> Class<? extends T> injectClass(ClassLoader classLoader, String className) {
         try {
             final URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
-            addPluginURLIfAbsent(urlClassLoader);
+            addPluginURLIfAbsent(urlClassLoader, className);
             return (Class<T>) urlClassLoader.loadClass(className);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    private synchronized void addPluginURLIfAbsent(URLClassLoader classLoader) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        if (!trace) {
-            trace = true;
-            List<String> pluginJars = agentOption.getPluginJars();
-            for (String pluginJar : pluginJars) {
+    private synchronized void addPluginURLIfAbsent(URLClassLoader classLoader, String className) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+        List<String> pluginJars = agentOption.getPluginJars();
+        for (String pluginJar : pluginJars) {
+            String[] split = pluginJar.split("/");
+            String detail = split[split.length - 1];
+            String[] jarInfo = detail.split("-");
+            String jar = jarInfo[0];
+            if (className.toUpperCase().contains(jar.toUpperCase())) {
+                System.out.println("className:" + className + "\t" + pluginJar);
                 ADD_URL.invoke(classLoader, toUrl(new File(pluginJar)));
             }
-
         }
     }
 

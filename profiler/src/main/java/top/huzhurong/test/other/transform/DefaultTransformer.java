@@ -48,13 +48,13 @@ public class DefaultTransformer implements ClassFileTransformer {
         if (className.startsWith(JvmUtil.jvmName("top.huzhurong.test")) && loader == agentClassLoader) {
             return null;
         }
-        if (this.tranTemplate.getTranCallback(className) != null) {
+        Class<? extends TransformCallback> tranTemplateTranCallback = this.tranTemplate.getTranCallback(className);
+        if (tranTemplateTranCallback != null) {
             Thread thread = Thread.currentThread();
             ClassLoader contextClassLoader = thread.getContextClassLoader();
             try {
                 thread.setContextClassLoader(agentClassLoader);
-                Class<? extends TransformCallback> tranCallback = this.tranTemplate.getTranCallback(className);
-                TransformCallbackProvider provider = new DynamicTransformCallbackProvider(tranCallback.getName(), this.agentOption);
+                TransformCallbackProvider provider = new DynamicTransformCallbackProvider(tranTemplateTranCallback.getName(), this.agentOption);
                 TransformCallback transformCallback = provider.getTransformCallback(loader);
                 ASMContext asmContext = new ASMCLass(classfileBuffer, className, loader);
                 return transformCallback.doInTransform(this.tranTemplate, asmContext, loader, className, classBeingRedefined, protectionDomain, classfileBuffer);

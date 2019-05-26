@@ -25,14 +25,14 @@ public class DruidTransformCallback implements ProfilerPlugin {
             throw new NullPointerException("template 为空");
         }
         logger.info("[增加mybatis回调处理]");
-        template.addTranCallback(JvmUtil.jvmName("com.alibaba.druid.pool.DruidDataSource"), DruidTransformCallback.DruidConnection.class);
+        template.addTranCallback(JvmUtil.jvmName("com.alibaba.druid.pool.DruidDataSource"), DruidConnection.class);
     }
 
     public static class DruidConnection implements TransformCallback {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             String[] method = {"getConnection"};
-            return asmContext.tranform(DruidHook.Instance,method , "(J)Lcom/alibaba/druid/pool/DruidPooledConnection");
+            return asmContext.tranform(DruidHook.Instance, method, "(J)Lcom/alibaba/druid/pool/DruidPooledConnection");
         }
     }
 }

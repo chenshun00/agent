@@ -27,12 +27,12 @@ public class DubboTransformCallback implements ProfilerPlugin {
         }
         logger.info("[增加Dubbo回调处理]");
         //provider
-        template.addTranCallback(JvmUtil.jvmName("com.alibaba.dubbo.rpc.protocol.AbstractInvoker"), AbstractInvokerTransform.class);
+        template.addTranCallback(JvmUtil.jvmName("com.alibaba.dubbo.rpc.protocol.AbstractInvoker"), DubboAbstractInvokerTransform.class);
         //consumer
-        template.addTranCallback(JvmUtil.jvmName("com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker"), AbstractProxyInvokerTransform.class);
+        template.addTranCallback(JvmUtil.jvmName("com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker"), DubboAbstractProxyInvokerTransform.class);
     }
 
-    public static class AbstractInvokerTransform implements TransformCallback {
+    public static class DubboAbstractInvokerTransform implements TransformCallback {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             String[] method = {"invoke"};
@@ -40,7 +40,7 @@ public class DubboTransformCallback implements ProfilerPlugin {
         }
     }
 
-    public static class AbstractProxyInvokerTransform implements TransformCallback {
+    public static class DubboAbstractProxyInvokerTransform implements TransformCallback {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             String[] method = {"invoke"};
