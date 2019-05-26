@@ -23,6 +23,8 @@
         <module>ibatis-plugin</module>
         <module>druid-plugin</module>
         <module>dubbo-plugin</module>
+        <module>httpClient3</module>
+        <module>httpClient4</module>
     </modules>
 
 
