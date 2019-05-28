@@ -24,7 +24,7 @@ public class DruidTransformCallback implements ProfilerPlugin {
         if (template == null) {
             throw new NullPointerException("template 为空");
         }
-        logger.info("[增加mybatis回调处理]");
+        logger.info("[增加druid回调处理]");
         template.addTranCallback(JvmUtil.jvmName("com.alibaba.druid.pool.DruidDataSource"), DruidConnection.class);
     }
 
@@ -32,7 +32,7 @@ public class DruidTransformCallback implements ProfilerPlugin {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             String[] method = {"getConnection"};
-            return asmContext.tranform(DruidHook.Instance, method, "(J)Lcom/alibaba/druid/pool/DruidPooledConnection");
+            return asmContext.tranform(DruidHook.Instance, method, "(J)Lcom/alibaba/druid/pool/DruidPooledConnection;");
         }
     }
 }

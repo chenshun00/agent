@@ -1,9 +1,7 @@
 package top.huzhurong.plugin.impl.intercepter;
 
 import top.huzhurong.test.bootcore.BaseHook;
-import top.huzhurong.test.bootcore.BeanMethodRegister;
-import top.huzhurong.test.common.log.AgentLog;
-import top.huzhurong.test.common.log.PLoggerFactory;
+import top.huzhurong.test.bootcore.bean.Builder;
 
 
 /**
@@ -12,23 +10,20 @@ import top.huzhurong.test.common.log.PLoggerFactory;
  */
 public class MysqlHook implements BaseHook {
 
-    private MysqlHook() {
-    }
-
     public static final MysqlHook Instance = new MysqlHook();
 
     @Override
     public void into(Object curObject, int index, Object[] args) {
-        System.out.println("into \t" + BeanMethodRegister.get(index).toString());
+        Builder.buildContext(index);
     }
 
     @Override
     public void out(Object result, Object cur, int index, Object[] args) {
-        System.out.println("out \t" + BeanMethodRegister.get(index).toString());
+        Builder.handleOutTrace();
     }
 
     @Override
     public void error(Throwable ex, Object curObject, int index, Object[] args) {
-
+        Builder.handleErrorTrace(ex);
     }
 }

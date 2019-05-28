@@ -4,6 +4,7 @@ import org.apache.catalina.connector.Request;
 import top.huzhurong.test.bootcore.BaseHook;
 import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.bootcore.bean.BeanInfo;
+import top.huzhurong.test.bootcore.schedule.SentService;
 import top.huzhurong.test.common.storge.Storge;
 import top.huzhurong.test.common.trace.Span;
 import top.huzhurong.test.common.trace.SpanEvent;
@@ -32,12 +33,10 @@ public final class TomcatHook implements BaseHook {
             BeanInfo beanInfo = BeanMethodRegister.get(index);
 
             Request request = (Request) args[0];
-            Trace trace = TraceContext.getContext();
-            trace.setRequest(request.getRequestURI());
+            Trace trace = TraceContext.setTrace(Trace.newTrace(request.getRequestURI()));
             trace.setSpan(new Span());
             Span span = trace.getSpan();
             span.setUrl(request.getRequestURI());
-            Stack<SpanEvent> spanEventStack = span.getSpanEventStack();
 
             SpanEvent spanEvent = new SpanEvent();
             spanEvent.setClassName(beanInfo.getClassName());
@@ -45,7 +44,7 @@ public final class TomcatHook implements BaseHook {
             spanEvent.setLine(beanInfo.getLineNumber());
             spanEvent.setSpanId(span.getSpanId());
             spanEvent.setStartTime(span.getStartTime());
-            spanEventStack.push(spanEvent);
+            span.push(spanEvent);
         }
     }
 
@@ -54,10 +53,9 @@ public final class TomcatHook implements BaseHook {
         try {
             Trace trace = TraceContext.getContext();
             Span span = trace.getSpan();
-            Stack<SpanEvent> spanEventStack = span.getSpanEventStack();
-            SpanEvent pop = spanEventStack.pop();
-            pop.setEndTime(System.currentTimeMillis());
-            System.out.println(pop);
+            SpanEvent spanEvent = span.pop();
+            spanEvent.setEndTime(System.currentTimeMillis());
+            SentService.push(trace);
         } finally {
             TraceContext.removeContext();
         }

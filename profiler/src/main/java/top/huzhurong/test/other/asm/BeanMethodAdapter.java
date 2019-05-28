@@ -18,8 +18,8 @@ public class BeanMethodAdapter extends AdviceAdapter {
 
     private final int key;
     private final long hookIndex;
-    private Label start;
-    private Label end;
+    private Label start = new Label();
+    private Label end = new Label();
     private Label globalStart = new Label();// 方法方法字节码结束位置
     private Label globalEnd = new Label();// 方法方法字节码结束位置
     private int hook;
@@ -32,7 +32,7 @@ public class BeanMethodAdapter extends AdviceAdapter {
 
         key = BeanMethodRegister.hookKey(className, name);
         hookIndex = HookRegister.hookKey(baseHook);
-        int next = Type.getArgumentTypes(this.methodDesc).length + 1;
+        int next = Type.getArgumentTypes(this.methodDesc).length;
         hook = next + 1;
         result = hook + 1;
         excep = result + 1;
@@ -56,15 +56,9 @@ public class BeanMethodAdapter extends AdviceAdapter {
     @Override
     public void visitCode() {
         mv.visitCode();
-
-        start = new Label();
-        end = new Label();
         loadParam("hook", "Ltop/huzhurong/test/bootcore/BaseHook;", globalStart, globalEnd);
-
         load();
-
         mark(globalStart);
-
         mv.visitVarInsn(ALOAD, hook);
         insertParameter();
         mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "into", "(Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
@@ -132,7 +126,7 @@ public class BeanMethodAdapter extends AdviceAdapter {
         mv.visitMethodInsn(INVOKEINTERFACE, "top/huzhurong/test/bootcore/BaseHook", "error", "(Ljava/lang/Throwable;Ljava/lang/Object;I[Ljava/lang/Object;)V", true);
         mv.visitVarInsn(ALOAD, excep);
         mv.visitInsn(Opcodes.ATHROW);
-        super.visitMaxs(-1, -1);
+        super.visitMaxs(0, 0);
     }
 
     //    /**
@@ -151,7 +145,7 @@ public class BeanMethodAdapter extends AdviceAdapter {
         } else {
             mv.visitInsn(Opcodes.ACONST_NULL);
         }
-        mv.visitLdcInsn(key);
+        visitKey();
         int size = Type.getArgumentTypes(this.methodDesc).length;
         if (size > 0) {
             loadArgArray();
@@ -159,4 +153,17 @@ public class BeanMethodAdapter extends AdviceAdapter {
             mv.visitInsn(Opcodes.ACONST_NULL);
         }
     }
+
+    private void visitKey() {
+        if (key >= -1 && key <= 5) {
+            mv.visitInsn(key);
+        } else if (key >= Byte.MIN_VALUE && key <= Byte.MAX_VALUE) {
+            mv.visitIntInsn(BIPUSH, +key);
+        } else if (key >= Short.MIN_VALUE && key <= Short.MAX_VALUE) {
+            mv.visitIntInsn(Opcodes.SIPUSH, key);
+        } else {
+            mv.visitLdcInsn(key);
+        }
+    }
+
 }

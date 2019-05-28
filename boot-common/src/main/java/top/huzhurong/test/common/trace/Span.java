@@ -1,6 +1,7 @@
 package top.huzhurong.test.common.trace;
 
-import java.util.Stack;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -8,6 +9,8 @@ import java.util.UUID;
  * @since 2019/3/3
  */
 public class Span {
+    public boolean error = false;
+    public int index = -1;
     private String url;
     private String node = "1";
     private String spanId = UUID.randomUUID().toString().replaceAll("-", "");
@@ -15,14 +18,31 @@ public class Span {
     private String tag;
     private long startTime = System.currentTimeMillis();
     private long endTIme;
-    private Stack<SpanEvent> spanEventStack = new Stack<SpanEvent>();
+    private BuilderStack<SpanEvent> spanEventStack = new BuilderStack<SpanEvent>();
+    private Map<SpanEvent, Integer> eventIndex = new HashMap<SpanEvent, Integer>();
 
     public void push(SpanEvent spanEvent) {
+        index++;
         spanEventStack.push(spanEvent);
+        eventIndex.put(spanEvent, index);
     }
 
     public SpanEvent pop() {
-        return spanEventStack.pop();
+        try {
+            while (true) {
+                SpanEvent pop = spanEventStack.pop(index--);
+                if (eventIndex.get(pop) != null) {
+                    eventIndex.remove(pop);
+                    return pop;
+                }
+            }
+        } finally {
+            index = spanEventStack.size();
+        }
+    }
+
+    public SpanEvent getOne() {
+        return spanEventStack.getOne();
     }
 
     public String getTag() {
@@ -47,14 +67,6 @@ public class Span {
 
     public void setParentSpanId(String parentSpanId) {
         this.parentSpanId = parentSpanId;
-    }
-
-    public Stack<SpanEvent> getSpanEventStack() {
-        return spanEventStack;
-    }
-
-    public void setSpanEventStack(Stack<SpanEvent> spanEventStack) {
-        this.spanEventStack = spanEventStack;
     }
 
     public long getStartTime() {
@@ -87,5 +99,21 @@ public class Span {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    @Override
+    public String toString() {
+        return "Span{" +
+                "error=" + error +
+                ", index=" + index +
+                ", url='" + url + '\'' +
+                ", node='" + node + '\'' +
+                ", spanId='" + spanId + '\'' +
+                ", parentSpanId='" + parentSpanId + '\'' +
+                ", tag='" + tag + '\'' +
+                ", startTime=" + startTime +
+                ", endTIme=" + endTIme +
+                ", spanEventStack=" + spanEventStack +
+                '}';
     }
 }

@@ -12,6 +12,8 @@ import top.huzhurong.test.common.util.JvmUtil;
 import java.util.Set;
 
 /**
+ * 进入Spring的处理，这里一般情况下只处理一次
+ *
  * @author chenshun00@gmail.com
  * @since 2019/3/25
  */

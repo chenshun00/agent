@@ -1,7 +1,9 @@
 package top.huzhurong.plugin.impl.intercepter;
 
 import top.huzhurong.test.bootcore.BaseHook;
-import top.huzhurong.test.bootcore.BeanMethodRegister;
+import top.huzhurong.test.bootcore.bean.Builder;
+import top.huzhurong.test.common.log.AgentLog;
+import top.huzhurong.test.common.log.PLoggerFactory;
 
 /**
  * @author chenshun00@gmail.com
@@ -9,20 +11,22 @@ import top.huzhurong.test.bootcore.BeanMethodRegister;
  */
 public class MybatisHook implements BaseHook {
 
+    private AgentLog logger = PLoggerFactory.getLogger(this.getClass());
+
     public static MybatisHook Instance = new MybatisHook();
 
     @Override
     public void into(Object curObject, int index, Object[] args) {
-        System.out.println("into \t" + BeanMethodRegister.get(index).toString());
+        Builder.buildContext(index);
     }
 
     @Override
     public void out(Object result, Object cur, int index, Object[] args) {
-        System.out.println("out\t" + BeanMethodRegister.get(index).toString());
+        Builder.handleOutTrace();
     }
 
     @Override
     public void error(Throwable ex, Object curObject, int index, Object[] args) {
-
+        Builder.handleErrorTrace(ex);
     }
 }

@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import com.google.inject.TypeLiteral;
 import top.huzhurong.test.bootcore.AgentOption;
+import top.huzhurong.test.bootcore.schedule.SentService;
 import top.huzhurong.test.bootcore.template.TranTemplate;
 import top.huzhurong.test.common.plugin.PluginLoader;
 import top.huzhurong.test.other.annotation.PluginJars;
@@ -34,6 +35,7 @@ public class AppModule extends AbstractModule {
         bind(Instrumentation.class).toInstance(agentOption.getInstrumentation());
         bind(ClassFileTransformer.class).to(DefaultTransformer.class);
         bind(ClassLoader.class).toInstance(agentOption.getClassLoader());
+        bind(SentService.class).toInstance(new SentService());
 
         TypeLiteral<List<String>> pluginJarFile = new TypeLiteral<List<String>>() {
         };

@@ -18,7 +18,7 @@ public class Trace {
         return new Trace(UUID.randomUUID().toString().replace("-", ""), request, StorgeFactory.getStorge());
     }
 
-    public Trace(String traceId, String request, Storge storge) {
+    public Trace(String traceId, String request, Storge<SpanEvent> storge) {
         this.traceId = traceId;
         this.request = request;
         this.storge = storge;
@@ -54,5 +54,15 @@ public class Trace {
 
     public void setStorge(Storge<SpanEvent> storge) {
         this.storge = storge;
+    }
+
+    @Override
+    public String toString() {
+        return "Trace{" +
+                "traceId='" + traceId + '\'' +
+                ", request='" + request + '\'' +
+                ", span=" + span +
+                ", storge=" + storge +
+                '}';
     }
 }

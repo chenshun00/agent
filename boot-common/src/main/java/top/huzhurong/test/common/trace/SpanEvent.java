@@ -12,6 +12,7 @@ public class SpanEvent {
     private String method;
     private String line;
     private String param;
+    private String errorStack;
 
     public String getSpanId() {
         return spanId;
@@ -67,6 +68,14 @@ public class SpanEvent {
 
     public void setParam(String param) {
         this.param = param;
+    }
+
+    public String getErrorStack() {
+        return errorStack;
+    }
+
+    public void setErrorStack(String errorStack) {
+        this.errorStack = errorStack;
     }
 
     @Override

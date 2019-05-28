@@ -27,9 +27,9 @@ public class ASMCLass extends AbstractContext implements ASMContext {
 
     public byte[] tranform(BaseHook baseHook, String[] method, String desc) {
         ClassReader classReader = new ClassReader(classfileBuffer);
-        ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_MAXS, this.classLoader);
+        ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_FRAMES, this.classLoader);
         try {
-            classReader.accept(new AsmAgentHook(className, Opcodes.ASM7, classWriter, baseHook, method, desc), ClassReader.EXPAND_FRAMES);
+            classReader.accept(new AsmAgentHook(className, Opcodes.ASM7, classWriter, baseHook, method, desc), 0);
             writeToFile(classWriter, className);
             return classWriter.toByteArray();
         } catch (Exception ex) {
@@ -42,8 +42,8 @@ public class ASMCLass extends AbstractContext implements ASMContext {
     public byte[] tranform(BaseHook baseHook) {
         try {
             ClassReader classReader = new ClassReader(classfileBuffer);
-            ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_MAXS, this.classLoader);
-            classReader.accept(new BeanAgentHook(Opcodes.ASM7, classWriter, baseHook, className), ClassReader.EXPAND_FRAMES);
+            ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_FRAMES, this.classLoader);
+            classReader.accept(new BeanAgentHook(Opcodes.ASM7, classWriter, baseHook, className), 0);
             writeToFile(classWriter, className);
             return classWriter.toByteArray();
         } catch (Exception ex) {

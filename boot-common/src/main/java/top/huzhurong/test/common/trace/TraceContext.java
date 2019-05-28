@@ -12,7 +12,7 @@ public class TraceContext {
     private static final ThreadLocal<Trace> threadLocal = new ThreadLocal<Trace>() {
         @Override
         protected Trace initialValue() {
-            return Trace.newTrace(null);
+            return null;
         }
     };
 
@@ -23,5 +23,11 @@ public class TraceContext {
     public static void removeContext() {
         threadLocal.remove();
     }
+
+    public static Trace setTrace(Trace trace) {
+        threadLocal.set(trace);
+        return trace;
+    }
+
 
 }
