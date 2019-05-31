@@ -49,7 +49,7 @@ public class SpringHook implements BaseHook {
     }
 
     @Override
-    public void error(Throwable ex, Object curObject, int index, Object[] args) {
+    public void error(Throwable ex, int index, Object[] args) {
 
     }
 }

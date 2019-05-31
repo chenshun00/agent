@@ -26,9 +26,8 @@ public interface BaseHook {
     /**
      * 执行方法出现异常
      *
-     * @param curObject 调用该方法的对象，如果方法是静态的那么为null
-     * @param ex        执行方法出现的异常(该异常需要重新抛出，上层应用可能会获取该异常并且进行处理)
-     * @param args      参数，如果没有参数，那么为null
+     * @param ex   执行方法出现的异常(该异常需要重新抛出，上层应用可能会获取该异常并且进行处理)
+     * @param args 参数，如果没有参数，那么为null
      */
-    void error(Throwable ex, Object curObject, int index, Object[] args);
+    void error(Throwable ex, int index, Object[] args);
 }

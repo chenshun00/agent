@@ -26,7 +26,7 @@ public class BeanHook implements BaseHook {
     }
 
     @Override
-    public void out(Object result, Object cur, int index, Object[] args) {
+    public void out(Object result,  Object cur, int index, Object[] args) {
         Trace trace = TraceContext.getContext();
         if (trace == null) return;
         Span span = trace.getSpan();
@@ -43,7 +43,7 @@ public class BeanHook implements BaseHook {
     }
 
     @Override
-    public void error(Throwable ex, Object curObject, int index, Object[] args) {
+    public void error(Throwable ex, int index, Object[] args) {
 
     }
 }

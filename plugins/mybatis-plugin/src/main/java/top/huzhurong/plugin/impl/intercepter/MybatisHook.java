@@ -21,12 +21,12 @@ public class MybatisHook implements BaseHook {
     }
 
     @Override
-    public void out(Object result, Object cur, int index, Object[] args) {
+    public void out(Object result,  Object cur, int index, Object[] args) {
         Builder.handleOutTrace();
     }
 
     @Override
-    public void error(Throwable ex, Object curObject, int index, Object[] args) {
+    public void error(Throwable ex, int index, Object[] args) {
         Builder.handleErrorTrace(ex);
     }
 }
