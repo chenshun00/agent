@@ -4,7 +4,7 @@ package top.huzhurong.test.common.trace;
  * @author chenshun00@gmail.com
  * @since 2019/3/3
  */
-public class TraceContext<T> {
+public class TraceContext {
 
     private TraceContext() {
     }
@@ -17,8 +17,8 @@ public class TraceContext<T> {
     };
 
     @SuppressWarnings("unchecked")
-    public static <T> Trace<? extends T> getContext() {
-        return (Trace<? extends T>) threadLocal.get();
+    public static Trace<SpanEvent> getContext() {
+        return (Trace<SpanEvent>) threadLocal.get();
     }
 
     public static void removeContext() {
@@ -26,7 +26,7 @@ public class TraceContext<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> Trace<? extends T> setTrace(Trace<? extends T> trace) {
+    public static Trace<SpanEvent> setTrace(Trace<SpanEvent> trace) {
         threadLocal.set(trace);
         return trace;
     }

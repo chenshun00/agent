@@ -8,9 +8,9 @@ import java.util.UUID;
  */
 public class Span<T> {
     public boolean error = false;
+    public String type = SpanType.http.getValue();
     public int index = -1;
     private String url;
-    private String node = "1";
     private String spanId = UUID.randomUUID().toString().replaceAll("-", "");
     private String parentSpanId = null;
     private String tag;
@@ -43,11 +43,12 @@ public class Span<T> {
     }
 
     public T getOne() {
-        try {
-            return spanEventStack.getOne();
-        } finally {
-            index--;
-        }
+        return spanEventStack.getOne();
+    }
+
+
+    public int size() {
+        return spanEventStack.size();
     }
 
     public String getTag() {
@@ -82,20 +83,12 @@ public class Span<T> {
         this.startTime = startTime;
     }
 
-    public long getEndTIme() {
+    public long getEndTime() {
         return endTIme;
     }
 
     public void setEndTIme(long endTIme) {
         this.endTIme = endTIme;
-    }
-
-    public String getNode() {
-        return node;
-    }
-
-    public void setNode(String node) {
-        this.node = node;
     }
 
     public String getUrl() {
@@ -112,7 +105,6 @@ public class Span<T> {
                 "error=" + error +
                 ", index=" + index +
                 ", url='" + url + '\'' +
-                ", node='" + node + '\'' +
                 ", spanId='" + spanId + '\'' +
                 ", parentSpanId='" + parentSpanId + '\'' +
                 ", tag='" + tag + '\'' +

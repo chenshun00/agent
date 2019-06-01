@@ -13,7 +13,7 @@ public class TraceContextTest {
     public void testGetContext() {
         Trace<?> trace = TraceContext.getContext();
         Assert.assertNull(trace);
-        trace = TraceContext.setTrace(Trace.newTrace("11"));
+        trace = TraceContext.setTrace(Trace.<SpanEvent>newTrace("11"));
         Assert.assertNotNull(trace);
         trace = TraceContext.getContext();
         Assert.assertNotNull(trace);

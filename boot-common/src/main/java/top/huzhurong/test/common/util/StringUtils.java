@@ -262,4 +262,16 @@ public final class StringUtils {
         buf.append(text.substring(start));
         return buf.toString();
     }
+
+    public static boolean areNotEmpty(String... values) {
+        boolean result = true;
+        if (values == null || values.length == 0) {
+            result = false;
+        } else {
+            for (String value : values) {
+                result &= !isEmpty(value);
+            }
+        }
+        return result;
+    }
 }

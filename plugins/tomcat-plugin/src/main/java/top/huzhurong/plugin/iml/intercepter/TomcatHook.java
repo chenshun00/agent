@@ -4,11 +4,7 @@ import org.apache.catalina.connector.Request;
 import top.huzhurong.test.bootcore.BaseHook;
 import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.bootcore.bean.BeanInfo;
-import top.huzhurong.test.bootcore.schedule.SentService;
-import top.huzhurong.test.common.trace.Span;
-import top.huzhurong.test.common.trace.SpanEvent;
-import top.huzhurong.test.common.trace.Trace;
-import top.huzhurong.test.common.trace.TraceContext;
+import top.huzhurong.test.common.trace.*;
 
 /**
  * @author chenshun00@gmail.com
@@ -26,10 +22,8 @@ public final class TomcatHook implements BaseHook {
         if (args[0] instanceof Request) {
 
             BeanInfo beanInfo = BeanMethodRegister.get(index);
-
             Request request = (Request) args[0];
-            Trace<SpanEvent> trace = Trace.newTrace(request.getRequestURI());
-            TraceContext.setTrace(trace);
+            Trace<SpanEvent> trace = TraceContext.setTrace(Trace.<SpanEvent>newTrace(request.getRequestURI()));
             trace.setSpan(new Span<SpanEvent>());
             Span<SpanEvent> span = trace.getSpan();
             span.setUrl(request.getRequestURI());
@@ -48,7 +42,9 @@ public final class TomcatHook implements BaseHook {
     public void out(Object result, Object cur, int index, Object[] args) {
         try {
             Trace<SpanEvent> trace = TraceContext.getContext();
+            if (trace == null) return;
             Span<SpanEvent> span = trace.getSpan();
+            span.setEndTIme(System.currentTimeMillis());
             SpanEvent spanEvent = span.pop();
             spanEvent.setEndTime(System.currentTimeMillis());
             SentService.push(trace);

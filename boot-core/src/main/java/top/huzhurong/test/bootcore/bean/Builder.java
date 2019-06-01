@@ -23,7 +23,6 @@ public class Builder {
         spanEvent.setMethod(beanInfo.getMethodName());
         spanEvent.setLine(beanInfo.getLineNumber());
         spanEvent.setSpanId(span.getSpanId());
-        spanEvent.setStartTime(span.getStartTime());
         span.push(spanEvent);
     }
 
@@ -42,7 +41,7 @@ public class Builder {
      */
     public static void handleErrorTrace(Throwable ex) {
         if (ex == null) return;
-        Trace<SpanEvent> trace = TraceContext.getContext();
+        Trace<SpanEvent> trace = (Trace<SpanEvent>) TraceContext.getContext();
         if (trace == null) return;
         Span<SpanEvent> span = trace.getSpan();
         SpanEvent spanEvent = span.pop();

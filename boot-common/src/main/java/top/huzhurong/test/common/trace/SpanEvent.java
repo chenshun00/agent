@@ -6,7 +6,7 @@ package top.huzhurong.test.common.trace;
  */
 public class SpanEvent {
     private String spanId;
-    private long startTime;
+    private long startTime = System.currentTimeMillis();
     private long endTime;
     private String className;
     private String method;

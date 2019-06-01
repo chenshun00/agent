@@ -18,8 +18,7 @@ public class FastJsonTransformCallback implements ProfilerPlugin {
         if (template == null) {
             throw new NullPointerException("template 为空");
         }
-        template.addTranCallback("com.alibaba.fastjson.serializer.JSONSerializer".replaceAll("\\.", "/"),
-                FastJsonCallback.class);
+//        template.addTranCallback("com.alibaba.fastjson.serializer.JSONSerializer".replaceAll("\\.", "/"), FastJsonCallback.class);
     }
 
     public static class FastJsonCallback implements TransformCallback {
