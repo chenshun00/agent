@@ -3,8 +3,6 @@ package top.huzhurong.test.other.asm;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.commons.AnalyzerAdapter;
-import org.objectweb.asm.commons.LocalVariablesSorter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.huzhurong.test.bootcore.BaseHook;
@@ -44,8 +42,7 @@ public class AsmAgentHook extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         MethodVisitor mv = cv.visitMethod(access, name, descriptor, signature, exceptions);
         if (baseHook != null && this.methodName.contains(name) && (this.desc == null || this.desc.equals(descriptor))) {
-
-            logger.info("ASM 修改字节码 [{}] [{}] [{}]", name, this.desc, descriptor);
+            logger.info("ASM 修改字节码 [{}] [{}] [{}]", className, name, descriptor);
             return new BeanMethodAdapter(api, mv, access, name, descriptor, className, baseHook);
         }
         return mv;

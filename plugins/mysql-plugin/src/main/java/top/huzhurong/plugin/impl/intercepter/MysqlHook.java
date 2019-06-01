@@ -2,6 +2,10 @@ package top.huzhurong.plugin.impl.intercepter;
 
 import top.huzhurong.test.bootcore.BaseHook;
 import top.huzhurong.test.bootcore.bean.Builder;
+import top.huzhurong.test.common.trace.Span;
+import top.huzhurong.test.common.trace.SpanEvent;
+import top.huzhurong.test.common.trace.Trace;
+import top.huzhurong.test.common.trace.TraceContext;
 
 
 /**
@@ -19,11 +23,20 @@ public class MysqlHook implements BaseHook {
 
     @Override
     public void out(Object result, Object cur, int index, Object[] args) {
-        Builder.handleOutTrace();
+        //Builder.handleOutTrace();
+        Trace<SpanEvent> trace = TraceContext.getContext();
+        if (trace == null) return;
+        Span<SpanEvent> span = trace.getSpan();
+        SpanEvent spanEvent = span.pop();
+        spanEvent.setEndTime(System.currentTimeMillis());
+        int len = 39 + Integer.toHexString(cur.hashCode()).length();
+        String sql = cur.toString().substring(len).trim().replaceAll("\n", "")
+                .replaceAll("\\s+", " ");
+        spanEvent.setTag(sql);
     }
 
     @Override
-    public void error(Throwable ex,  int index, Object[] args) {
+    public void error(Throwable ex, int index, Object[] args) {
         Builder.handleErrorTrace(ex);
     }
 }

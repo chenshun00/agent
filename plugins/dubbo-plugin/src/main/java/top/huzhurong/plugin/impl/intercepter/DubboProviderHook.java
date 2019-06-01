@@ -15,7 +15,7 @@ import java.util.UUID;
  */
 public class DubboProviderHook implements BaseHook {
 
-    public static DubboConsumerHook Instance = new DubboConsumerHook();
+    public static DubboProviderHook Instance = new DubboProviderHook();
 
     //进入dubbo provider , 新创建一个trace和span
     @Override
@@ -32,7 +32,7 @@ public class DubboProviderHook implements BaseHook {
         Span<SpanEvent> span = new Span<SpanEvent>();
         span.type = SpanType.dubbo.getValue();
         trace.setSpan(span);
-        span.setUrl(invocation.getInvoker().getInterface().getName());
+        span.setUrl(invocation.getInvoker().getInterface().getName() + "#" + invocation.getMethodName());
 
         span.setSpanId(UUID.randomUUID().toString().replaceAll("-", ""));
         span.setParentSpanId(parentSpanId);

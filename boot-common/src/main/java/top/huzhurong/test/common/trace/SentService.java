@@ -29,6 +29,8 @@ public class SentService {
     private static Queue<Trace<SpanEvent>> obj = new LinkedBlockingQueue<Trace<SpanEvent>>(100000);
     private static Queue<Trace<SpanEvent>> temp = new LinkedBlockingQueue<Trace<SpanEvent>>(10000);
 
+    private static String PROJECT_NAME = System.getProperty("project.name", System.getProperty("user.home"));
+
     static {
         service = Executors.newSingleThreadScheduledExecutor();
         start();
@@ -61,8 +63,10 @@ public class SentService {
             jsonObject.put("parentSpanId", span.getParentSpanId());
             jsonObject.put("endpoint", span.getUrl());
             jsonObject.put("duration", span.getEndTime() - span.getStartTime());
-            jsonObject.put("type",span.type);
+            jsonObject.put("type", span.type);
             jsonObject.put("stack", spanEvents);
+            jsonObject.put("project", PROJECT_NAME);
+            //jsonObject.put("ip", "");
             param.put("json", jsonObject.toJSONString());
             WebUtils.doPost(LOG_URL, param, 3000, 3000);
         } catch (IOException e) {

@@ -13,6 +13,8 @@ public class SpanEvent {
     private String line;
     private String param;
     private String errorStack;
+    private String tag;
+    private long duration;
     public boolean handle = false;
 
     public String getSpanId() {
@@ -37,6 +39,7 @@ public class SpanEvent {
 
     public void setEndTime(long endTime) {
         this.endTime = endTime;
+        this.duration = endTime - startTime;
     }
 
     public String getClassName() {
@@ -77,6 +80,14 @@ public class SpanEvent {
 
     public void setErrorStack(String errorStack) {
         this.errorStack = errorStack;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     @Override

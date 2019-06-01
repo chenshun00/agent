@@ -30,19 +30,17 @@ public class DubboConsumerHook implements BaseHook {
         assert args.length == 1;
         assert args[0] instanceof Invocation;
         Invocation invocation = (Invocation) args[0];
+        Map<String, String> attachments = invocation.getAttachments();
         BeanInfo beanInfo = BeanMethodRegister.get(index);
-
         String traceId = trace.getTraceId();
-
         String spanId = span.getSpanId();
         SpanEvent spanEvent = new SpanEvent();
-        spanEvent.setMethod(beanInfo.getMethodName());
-        spanEvent.setClassName(beanInfo.getClassName());
+        spanEvent.setClassName(attachments.get("interface"));
+        spanEvent.setMethod(invocation.getMethodName());
         spanEvent.setLine(beanInfo.getLineNumber());
         spanEvent.setSpanId(spanId);
         span.push(spanEvent);
         //设置dubbo的attach数据
-        Map<String, String> attachments = invocation.getAttachments();
         attachments.put("traceId", traceId);
         attachments.put("parentSpanId", spanId);
     }

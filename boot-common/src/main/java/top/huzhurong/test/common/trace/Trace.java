@@ -1,7 +1,5 @@
 package top.huzhurong.test.common.trace;
 
-import top.huzhurong.test.common.storge.Storge;
-
 import java.util.UUID;
 
 /**
@@ -12,16 +10,15 @@ public class Trace<T> {
     private String traceId;
     private String request;
     private Span<T> span;
-    private Storge<T> storge;
+    public Integer code;
 
     public static <T> Trace<T> newTrace(String request) {
-        return new Trace(UUID.randomUUID().toString().replace("-", ""), request, StorgeFactory.getStorge());
+        return new Trace<T>(UUID.randomUUID().toString().replace("-", ""), request);
     }
 
-    public Trace(String traceId, String request, Storge<T> storge) {
+    public Trace(String traceId, String request) {
         this.traceId = traceId;
         this.request = request;
-        this.storge = storge;
     }
 
     public String getTraceId() {
@@ -32,14 +29,6 @@ public class Trace<T> {
         this.traceId = traceId;
     }
 
-    public String getRequest() {
-        return request;
-    }
-
-    public void setRequest(String request) {
-        this.request = request;
-    }
-
     public Span<T> getSpan() {
         return span;
     }
@@ -48,21 +37,12 @@ public class Trace<T> {
         this.span = span;
     }
 
-    public Storge<T> getStorge() {
-        return storge;
-    }
-
-    public void setStorge(Storge<T> storge) {
-        this.storge = storge;
-    }
-
     @Override
     public String toString() {
         return "Trace{" +
                 "traceId='" + traceId + '\'' +
                 ", request='" + request + '\'' +
                 ", span=" + span +
-                ", storge=" + storge +
                 '}';
     }
 }

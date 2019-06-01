@@ -26,9 +26,9 @@ public class DubboTransformCallback implements ProfilerPlugin {
             throw new NullPointerException("template 为空");
         }
         logger.info("[增加Dubbo回调处理]");
-        //provider
-        template.addTranCallback(JvmUtil.jvmName("com.alibaba.dubbo.rpc.protocol.AbstractInvoker"), DubboAbstractInvokerTransform.class);
         //consumer
+        template.addTranCallback(JvmUtil.jvmName("com.alibaba.dubbo.rpc.protocol.AbstractInvoker"), DubboAbstractInvokerTransform.class);
+        //provider
         template.addTranCallback(JvmUtil.jvmName("com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker"), DubboAbstractProxyInvokerTransform.class);
     }
 
@@ -36,7 +36,7 @@ public class DubboTransformCallback implements ProfilerPlugin {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             String[] method = {"invoke"};
-            return asmContext.tranform(DubboProviderHook.Instance, method, null);
+            return asmContext.tranform(DubboConsumerHook.Instance, method, null);
         }
     }
 
@@ -44,7 +44,7 @@ public class DubboTransformCallback implements ProfilerPlugin {
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             String[] method = {"invoke"};
-            return asmContext.tranform(DubboConsumerHook.Instance, method, null);
+            return asmContext.tranform(DubboProviderHook.Instance, method, null);
         }
     }
 }
