@@ -5,15 +5,10 @@ import top.huzhurong.test.bootcore.BaseHook;
 import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.bootcore.bean.BeanInfo;
 import top.huzhurong.test.bootcore.schedule.SentService;
-import top.huzhurong.test.common.storge.Storge;
 import top.huzhurong.test.common.trace.Span;
 import top.huzhurong.test.common.trace.SpanEvent;
 import top.huzhurong.test.common.trace.Trace;
 import top.huzhurong.test.common.trace.TraceContext;
-
-import java.util.Map;
-import java.util.Stack;
-import java.util.UUID;
 
 /**
  * @author chenshun00@gmail.com
@@ -33,9 +28,10 @@ public final class TomcatHook implements BaseHook {
             BeanInfo beanInfo = BeanMethodRegister.get(index);
 
             Request request = (Request) args[0];
-            Trace trace = TraceContext.setTrace(Trace.newTrace(request.getRequestURI()));
-            trace.setSpan(new Span());
-            Span span = trace.getSpan();
+            Trace<SpanEvent> trace = Trace.newTrace(request.getRequestURI());
+            TraceContext.setTrace(trace);
+            trace.setSpan(new Span<SpanEvent>());
+            Span<SpanEvent> span = trace.getSpan();
             span.setUrl(request.getRequestURI());
 
             SpanEvent spanEvent = new SpanEvent();
@@ -51,8 +47,8 @@ public final class TomcatHook implements BaseHook {
     @Override
     public void out(Object result, Object cur, int index, Object[] args) {
         try {
-            Trace trace = TraceContext.getContext();
-            Span span = trace.getSpan();
+            Trace<SpanEvent> trace = TraceContext.getContext();
+            Span<SpanEvent> span = trace.getSpan();
             SpanEvent spanEvent = span.pop();
             spanEvent.setEndTime(System.currentTimeMillis());
             SentService.push(trace);

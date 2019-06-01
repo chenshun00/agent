@@ -12,10 +12,10 @@ import top.huzhurong.test.common.trace.TraceContext;
  */
 public class Builder {
     public static void buildContext(int index) {
-        Trace trace = TraceContext.getContext();
+        Trace<SpanEvent> trace = TraceContext.getContext();
         if (trace == null) return;
 
-        Span span = trace.getSpan();
+        Span<SpanEvent> span = trace.getSpan();
         BeanInfo beanInfo = BeanMethodRegister.get(index);
 
         SpanEvent spanEvent = new SpanEvent();
@@ -28,9 +28,9 @@ public class Builder {
     }
 
     public static void handleOutTrace() {
-        Trace trace = TraceContext.getContext();
+        Trace<SpanEvent> trace = TraceContext.getContext();
         if (trace == null) return;
-        Span span = trace.getSpan();
+        Span<SpanEvent> span = trace.getSpan();
         SpanEvent spanEvent = span.pop();
         spanEvent.setEndTime(System.currentTimeMillis());
     }
@@ -42,9 +42,9 @@ public class Builder {
      */
     public static void handleErrorTrace(Throwable ex) {
         if (ex == null) return;
-        Trace trace = TraceContext.getContext();
+        Trace<SpanEvent> trace = TraceContext.getContext();
         if (trace == null) return;
-        Span span = trace.getSpan();
+        Span<SpanEvent> span = trace.getSpan();
         SpanEvent spanEvent = span.pop();
         spanEvent.setEndTime(System.currentTimeMillis());
         if (span.error) {

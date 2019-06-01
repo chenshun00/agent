@@ -22,7 +22,7 @@ public class Invoke {
     }
 
 
-    public static void out(Object cur, long index, Object ret, Object[] args) {
+    public static void out(Object ret, long index, Object cur, Object[] args) {
         BaseHook baseHook = HookRegister.get(index);
         baseHook.out(ret, cur, (int) index, args);
     }

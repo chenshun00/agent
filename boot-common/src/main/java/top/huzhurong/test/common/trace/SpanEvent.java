@@ -13,6 +13,7 @@ public class SpanEvent {
     private String line;
     private String param;
     private String errorStack;
+    public boolean handle = false;
 
     public String getSpanId() {
         return spanId;

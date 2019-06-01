@@ -26,13 +26,14 @@ public class BeanHook implements BaseHook {
     }
 
     @Override
-    public void out(Object result,  Object cur, int index, Object[] args) {
-        Trace trace = TraceContext.getContext();
+    public void out(Object result, Object cur, int index, Object[] args) {
+        Trace<SpanEvent> trace = TraceContext.getContext();
         if (trace == null) return;
-        Span span = trace.getSpan();
+        Span<SpanEvent> span = trace.getSpan();
         SpanEvent spanEvent = span.pop();
         spanEvent.setEndTime(System.currentTimeMillis());
         try {
+            //需要多pop一次
             if (cur.getClass().isAnnotationPresent(ControllerAdvice.class)) {
                 SpanEvent controllerEvent = span.pop();
                 controllerEvent.setEndTime(System.currentTimeMillis());

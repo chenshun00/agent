@@ -1,14 +1,12 @@
 package top.huzhurong.test.common.trace;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
  * @author chenshun00@gmail.com
  * @since 2019/3/3
  */
-public class Span {
+public class Span<T> {
     public boolean error = false;
     public int index = -1;
     private String url;
@@ -18,31 +16,38 @@ public class Span {
     private String tag;
     private long startTime = System.currentTimeMillis();
     private long endTIme;
-    private BuilderStack<SpanEvent> spanEventStack = new BuilderStack<SpanEvent>();
-    private Map<SpanEvent, Integer> eventIndex = new HashMap<SpanEvent, Integer>();
+    private BuilderStack<T> spanEventStack = new BuilderStack<T>();
 
-    public void push(SpanEvent spanEvent) {
+    public void push(T t) {
         index++;
-        spanEventStack.push(spanEvent);
-        eventIndex.put(spanEvent, index);
+        spanEventStack.push(t);
     }
 
-    public SpanEvent pop() {
+    /**
+     * 先pop一次
+     */
+    public T pop() {
+        int temp = index;
         try {
             while (true) {
-                SpanEvent pop = spanEventStack.pop(index--);
-                if (eventIndex.get(pop) != null) {
-                    eventIndex.remove(pop);
-                    return pop;
+                SpanEvent pop = (SpanEvent) spanEventStack.pop(index);
+                if (!pop.handle) {
+                    pop.handle = true;
+                    return (T) pop;
                 }
+                index--;
             }
         } finally {
-            index = spanEventStack.size();
+            index = temp;
         }
     }
 
-    public SpanEvent getOne() {
-        return spanEventStack.getOne();
+    public T getOne() {
+        try {
+            return spanEventStack.getOne();
+        } finally {
+            index--;
+        }
     }
 
     public String getTag() {

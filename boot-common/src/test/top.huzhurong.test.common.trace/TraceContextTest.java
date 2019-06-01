@@ -1,5 +1,6 @@
 package top.huzhurong.test.common.trace;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -10,18 +11,16 @@ public class TraceContextTest {
 
     @Test
     public void testGetContext() {
-        Trace trace = TraceContext.getContext();
-        if (trace == null) {
-            trace = TraceContext.setTrace(Trace.newTrace("11"));
-        }
-        System.out.println(trace);
-
+        Trace<?> trace = TraceContext.getContext();
+        Assert.assertNull(trace);
+        trace = TraceContext.setTrace(Trace.newTrace("11"));
+        Assert.assertNotNull(trace);
         trace = TraceContext.getContext();
-        System.out.println(trace);
+        Assert.assertNotNull(trace);
         trace = TraceContext.getContext();
-        System.out.println(trace);
+        Assert.assertNotNull(trace);
         TraceContext.removeContext();
         trace = TraceContext.getContext();
-        System.out.println(trace);
+        Assert.assertNull(trace);
     }
 }

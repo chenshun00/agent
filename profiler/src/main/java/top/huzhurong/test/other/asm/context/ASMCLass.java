@@ -1,11 +1,11 @@
 package top.huzhurong.test.other.asm.context;
 
-import top.huzhurong.test.bootcore.BaseHook;
-import top.huzhurong.test.bootcore.asm.ASMContext;
-import top.huzhurong.test.other.asm.AsmAgentHook;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
+import top.huzhurong.test.bootcore.BaseHook;
+import top.huzhurong.test.bootcore.asm.ASMContext;
+import top.huzhurong.test.other.asm.AsmAgentHook;
 import top.huzhurong.test.other.asm.BeanAgentHook;
 import top.huzhurong.test.other.asm.TraceClassWriter;
 
@@ -32,10 +32,9 @@ public class ASMCLass extends AbstractContext implements ASMContext {
      */
     public byte[] tranform(BaseHook baseHook, String[] method, String desc) {
         ClassReader classReader = new ClassReader(classfileBuffer);
-        //
-        ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES, this.classLoader);
+        ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_MAXS, this.classLoader);
         try {
-            classReader.accept(new AsmAgentHook(className, Opcodes.ASM7, classWriter, baseHook, method, desc), ClassReader.EXPAND_FRAMES);
+            classReader.accept(new AsmAgentHook(className, Opcodes.ASM7, classWriter, baseHook, method, desc), ClassReader.SKIP_FRAMES);
             writeToFile(classWriter, className);
             return classWriter.toByteArray();
         } catch (Exception ex) {
@@ -49,7 +48,7 @@ public class ASMCLass extends AbstractContext implements ASMContext {
         try {
             ClassReader classReader = new ClassReader(classfileBuffer);
             ClassWriter classWriter = new TraceClassWriter(classReader, ClassWriter.COMPUTE_MAXS, this.classLoader);
-            classReader.accept(new BeanAgentHook(Opcodes.ASM7, classWriter, baseHook, className), ClassReader.EXPAND_FRAMES);
+            classReader.accept(new BeanAgentHook(Opcodes.ASM7, classWriter, baseHook, className), ClassReader.SKIP_FRAMES);
             writeToFile(classWriter, className);
             return classWriter.toByteArray();
         } catch (Exception ex) {

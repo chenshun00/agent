@@ -4,27 +4,29 @@ package top.huzhurong.test.common.trace;
  * @author chenshun00@gmail.com
  * @since 2019/3/3
  */
-public class TraceContext {
+public class TraceContext<T> {
 
     private TraceContext() {
     }
 
-    private static final ThreadLocal<Trace> threadLocal = new ThreadLocal<Trace>() {
+    private static final ThreadLocal threadLocal = new ThreadLocal() {
         @Override
         protected Trace initialValue() {
             return null;
         }
     };
 
-    public static Trace getContext() {
-        return threadLocal.get();
+    @SuppressWarnings("unchecked")
+    public static <T> Trace<? extends T> getContext() {
+        return (Trace<? extends T>) threadLocal.get();
     }
 
     public static void removeContext() {
         threadLocal.remove();
     }
 
-    public static Trace setTrace(Trace trace) {
+    @SuppressWarnings("unchecked")
+    public static <T> Trace<? extends T> setTrace(Trace<? extends T> trace) {
         threadLocal.set(trace);
         return trace;
     }

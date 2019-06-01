@@ -8,17 +8,17 @@ import java.util.UUID;
  * @author chenshun00@gmail.com
  * @since 2019/3/3
  */
-public class Trace {
+public class Trace<T> {
     private String traceId;
     private String request;
-    private Span span;
-    private Storge<SpanEvent> storge;
+    private Span<T> span;
+    private Storge<T> storge;
 
-    public static Trace newTrace(String request) {
+    public static <T> Trace<T> newTrace(String request) {
         return new Trace(UUID.randomUUID().toString().replace("-", ""), request, StorgeFactory.getStorge());
     }
 
-    public Trace(String traceId, String request, Storge<SpanEvent> storge) {
+    public Trace(String traceId, String request, Storge<T> storge) {
         this.traceId = traceId;
         this.request = request;
         this.storge = storge;
@@ -40,19 +40,19 @@ public class Trace {
         this.request = request;
     }
 
-    public Span getSpan() {
+    public Span<T> getSpan() {
         return span;
     }
 
-    public void setSpan(Span span) {
+    public void setSpan(Span<T> span) {
         this.span = span;
     }
 
-    public Storge<SpanEvent> getStorge() {
+    public Storge<T> getStorge() {
         return storge;
     }
 
-    public void setStorge(Storge<SpanEvent> storge) {
+    public void setStorge(Storge<T> storge) {
         this.storge = storge;
     }
 

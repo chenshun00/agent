@@ -17,8 +17,9 @@ public interface BaseHook {
     /**
      * 出去方法
      *
-     * @param cur  返回值，如果没有返回值，那么是null
-     * @param args 参数，如果没有参数，那么为null
+     * @param result 返回值
+     * @param cur    当前对象this/null
+     * @param args   参数，如果没有参数，那么为null
      */
     void out(Object result, Object cur, int index, Object[] args);
 
