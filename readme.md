@@ -1,23 +1,18 @@
 * 使用
 
-idea可以直接在 `edit configurations` --> `Vm options` 处加入如下命令，点击 apply,保存即可
-
 ```bash
--javaagent:/*[替换成你到jar包位置]*/.m2/repository/top/huzhurong/agent/o-mysql/1.0-SNAPSHOT/o-mysql-1.0-SNAPSHOT.jar
+ cd agent
+ mvn clean install -Dmaven.test.skip=true
+ # 类unix
+ cp boot-agent/target/boot-agent-1.0-SNAPSHOT.zip ~/Desktop
+ # windows
+ # move /y boot-agent/target/boot-agent-1.0-SNAPSHOT.zip
 ```
 
-加入 `-Dmysql.log=yes` jvm参数输出到日志`${user.home}/logs/agent/xxxxx.log`，而不是输出在控制台
-
-#### 使用结果
-
-```text
-【sql:delete from perform_data where id = 1】,【rt:31(ms)】,【扫描行数:1】
-【sql:SELECT id,context,type,meta_id,add_time FROM perform_data WHERE id = 1154080】,【rt:1(ms)】,【扫描行数:1】
-【sql:SELECT id,context,type,meta_id,add_time FROM perform_data WHERE id = 111111】,【rt:2(ms)】,【扫描行数:0】
-
-```
-
-> 支持 `select` `update` `insert` `delete`
+1、安装Elasticsearch 5.3.0
+2、启动 `boot-collect#CollectApplication`
+3、添加 `-javaagent:~/xxx/xxx.jar` 置 `jvm参数`
+4、启动项目，打开kibana即可查看数据
 
 #### Asm 和 agent 的使用
 
@@ -31,6 +26,11 @@ jvm 中，一份class文件是一致的 `(equals(class) = true)` 的前提是类
     *   安全审计
 
 > 相比aop的优势，应用代码无侵入，取消 `-javaagent` 参数即可取消监控
+
+#### Todo
+
+*   代码优化
+*   前端UI正在规划当中
 
 #### 参考资料
 

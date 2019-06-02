@@ -3,6 +3,7 @@ package top.huzhurong.test.common.trace;
 import com.alibaba.fastjson.JSONObject;
 import top.huzhurong.test.common.log.AgentLog;
 import top.huzhurong.test.common.log.PLoggerFactory;
+import top.huzhurong.test.common.util.JvmUtil;
 import top.huzhurong.test.common.util.WebUtils;
 
 import java.io.IOException;
@@ -66,7 +67,7 @@ public class SentService {
             jsonObject.put("type", span.type);
             jsonObject.put("stack", spanEvents);
             jsonObject.put("project", PROJECT_NAME);
-            //jsonObject.put("ip", "");
+            jsonObject.put("ip", JvmUtil.getEn0Ip());
             param.put("json", jsonObject.toJSONString());
             WebUtils.doPost(LOG_URL, param, 3000, 3000);
         } catch (IOException e) {

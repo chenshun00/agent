@@ -68,7 +68,9 @@ public final class TomcatHook implements BaseHook {
                     builder.append(s).append(",");
                 }
             }
-            spanEvent.setTag(builder.toString());
+            String s = builder.toString();
+            if (s.length() > 0)
+                spanEvent.setTag(builder.toString());
             SentService.push(trace);
         } finally {
             TraceContext.removeContext();
