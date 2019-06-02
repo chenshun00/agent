@@ -45,7 +45,7 @@ public class SentService {
     }
 
     private static void handle(Trace<SpanEvent> trace) {
-        logger.info("[poll] [{}]", trace);
+        logger.debug("[poll] [{}]", trace);
         try {
             String traceId = trace.getTraceId();
             Span<SpanEvent> span = trace.getSpan();
@@ -54,7 +54,7 @@ public class SentService {
             for (int i = 0; i < size; i++) {
                 spanEvents.add(span.getOne());
             }
-
+            Collections.reverse(spanEvents);
             Map<String, String> param = new HashMap<String, String>();
 
             JSONObject jsonObject = new JSONObject();
@@ -70,10 +70,9 @@ public class SentService {
             param.put("json", jsonObject.toJSONString());
             WebUtils.doPost(LOG_URL, param, 3000, 3000);
         } catch (IOException e) {
-            logger.error("[send agent error] [{}]", e.getMessage(), e);
+            logger.error("[send agent IOException] [{}]", e.getMessage(), e);
         } catch (Exception ex) {
-            logger.error("[send agent error] [{}]", ex.getMessage(), ex);
-            ex.printStackTrace();
+            logger.error("[send agent Exception] [{}]", ex.getMessage(), ex);
         }
     }
 
@@ -105,7 +104,7 @@ public class SentService {
                     }
                 }
             }
-        }, 10, 10, TimeUnit.SECONDS);
+        }, 2, 2, TimeUnit.SECONDS);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override

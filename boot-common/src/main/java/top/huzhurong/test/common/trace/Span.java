@@ -1,6 +1,6 @@
 package top.huzhurong.test.common.trace;
 
-import java.util.UUID;
+import top.huzhurong.test.common.util.JvmUtil;
 
 /**
  * @author chenshun00@gmail.com
@@ -11,7 +11,7 @@ public class Span<T> {
     public String type = SpanType.http.getValue();
     public int index = -1;
     private String url;
-    private String spanId = UUID.randomUUID().toString().replaceAll("-", "");
+    private String spanId = JvmUtil.createSpanId();
     private String parentSpanId = null;
     private String tag;
     private long startTime = System.currentTimeMillis();

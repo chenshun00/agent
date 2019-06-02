@@ -1,5 +1,6 @@
 package top.huzhurong.plugin.impl.httpcliet3test;
 
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
@@ -25,10 +26,22 @@ public class TestHttpClient3 {
     }
 
     @Test
-    public void testRequestParam() {
+    public void testRequestParam() throws IllegalAccessException, NoSuchFieldException {
         GetMethod getMethod = new GetMethod("https://www.kancloud.cn/longxuan/httpclient-arron/117499?aa=bb&bb=ccc&1=2");
         String queryString = getMethod.getQueryString();
         Assert.assertEquals("aa=bb&bb=ccc&1=2", queryString);
+
+        HttpMethodParams getMethodParams = getMethod.getParams();
+        Assert.assertNotNull(getMethodParams);
+        Field parameters = getMethodParams.getClass().getSuperclass().getDeclaredField("parameters");
+        parameters.setAccessible(true);
+        Object o = parameters.get(getMethodParams);
+        Assert.assertNull(o);
+
+        Assert.assertEquals("/longxuan/httpclient-arron/117499", getMethod.getPath());
+        HostConfiguration hostConfiguration = getMethod.getHostConfiguration();
+        String hostURL = hostConfiguration.getHostURL();
+        Assert.assertEquals("https://www.kancloud.cn", hostURL);
     }
 
     @Test
@@ -49,7 +62,7 @@ public class TestHttpClient3 {
         Assert.assertEquals("2", getMethodParams.getParameter("1"));
 
 
-        Field parameters = getMethodParams.getClass().getDeclaredField("parameters");
+        Field parameters = getMethodParams.getClass().getSuperclass().getDeclaredField("parameters");
         parameters.setAccessible(true);
         Object o = parameters.get(getMethodParams);
         Assert.assertTrue(o instanceof HashMap);
@@ -58,8 +71,8 @@ public class TestHttpClient3 {
         Assert.assertTrue(hashMap.containsKey("bb"));
         Assert.assertTrue(hashMap.containsKey("1"));
 
-        Assert.assertEquals("bb",hashMap.get("aa"));
-        Assert.assertEquals("ccc",hashMap.get("bb"));
-        Assert.assertEquals("2",hashMap.get("1"));
+        Assert.assertEquals("bb", hashMap.get("aa"));
+        Assert.assertEquals("ccc", hashMap.get("bb"));
+        Assert.assertEquals("2", hashMap.get("1"));
     }
 }

@@ -25,14 +25,20 @@ public class HttpClient4TransformCallback implements ProfilerPlugin {
             return;
         }
         logger.info("[增加httpClient4回调处理]");
-//        template.addTranCallback(JvmUtil.jvmName("com.ibatis.sqlmap.engine.execution.SqlExecutor"), HttpClientExec.class);
+        template.addTranCallback(JvmUtil.jvmName("org.apache.http.impl.client.InternalHttpClient"), HttpClientExec.class);
+        template.addTranCallback(JvmUtil.jvmName("org.apache.http.impl.client.AbstractHttpClient"), HttpClientExec.class);
+        template.addTranCallback(JvmUtil.jvmName("org.apache.http.impl.client.MinimalHttpClient"), HttpClientExec.class);
     }
 
     public static class HttpClientExec implements TransformCallback {
+
+        private AgentLog logger = PLoggerFactory.getLogger(this.getClass());
+
         @Override
         public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
-            String[] method = {"executeUpdate", "executeQuery"};
-            return asmContext.tranform(HttpClient4Hook.Instance, method, null);
+            logger.info("处理httpClient4回调 [{}] [{}]", className, classLoader);
+            String[] method = {"doExecute"};
+            return asmContext.tranform(HttpClient4Hook.Instance, method, "(Lorg/apache/http/HttpHost;Lorg/apache/http/HttpRequest;Lorg/apache/http/protocol/HttpContext;)Lorg/apache/http/client/methods/CloseableHttpResponse;");
         }
     }
 }

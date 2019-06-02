@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.common.trace.Span;
+import top.huzhurong.test.common.trace.SpanEvent;
 import top.huzhurong.test.common.trace.Trace;
 import top.huzhurong.test.common.trace.TraceContext;
-
-import java.util.UUID;
+import top.huzhurong.test.common.util.JvmUtil;
 
 /**
  * @author chenshun00@gmail.com
@@ -16,7 +16,7 @@ import java.util.UUID;
 public class BuilderTest {
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         BeanMethodRegister.hookKey("first", "1");
         BeanMethodRegister.hookKey("second", "2");
         BeanMethodRegister.hookKey("third", "3");
@@ -27,8 +27,8 @@ public class BuilderTest {
 
     @Test
     public void testTraceContext() {
-        Trace trace = TraceContext.setTrace(Trace.newTrace(UUID.randomUUID().toString()));
-        trace.setSpan(new Span());
+        Trace<SpanEvent> trace = TraceContext.setTrace(new Trace<SpanEvent>(JvmUtil.createTraceId(), "/a"));
+        trace.setSpan(new Span<SpanEvent>());
 
         Builder.buildContext(1);
         Builder.buildContext(2);

@@ -6,8 +6,8 @@ import top.huzhurong.test.bootcore.BeanMethodRegister;
 import top.huzhurong.test.bootcore.bean.BeanInfo;
 import top.huzhurong.test.common.trace.*;
 
+import java.util.Arrays;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author chenshun00@gmail.com
@@ -34,7 +34,6 @@ public class DubboProviderHook implements BaseHook {
         trace.setSpan(span);
         span.setUrl(invocation.getInvoker().getInterface().getName() + "#" + invocation.getMethodName());
 
-        span.setSpanId(UUID.randomUUID().toString().replaceAll("-", ""));
         span.setParentSpanId(parentSpanId);
         trace.setTraceId(traceId);
         BeanInfo beanInfo = BeanMethodRegister.get(index);
@@ -44,6 +43,7 @@ public class DubboProviderHook implements BaseHook {
         spanEvent.setLine(beanInfo.getLineNumber());
         spanEvent.setSpanId(span.getSpanId());
         spanEvent.setStartTime(span.getStartTime());
+        spanEvent.setParam(Arrays.toString(invocation.getParameterTypes()) + ":" + Arrays.toString(invocation.getArguments()));
         span.push(spanEvent);
     }
 

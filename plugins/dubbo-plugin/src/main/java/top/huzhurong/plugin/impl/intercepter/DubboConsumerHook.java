@@ -10,6 +10,7 @@ import top.huzhurong.test.common.trace.SpanEvent;
 import top.huzhurong.test.common.trace.Trace;
 import top.huzhurong.test.common.trace.TraceContext;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -39,6 +40,7 @@ public class DubboConsumerHook implements BaseHook {
         spanEvent.setMethod(invocation.getMethodName());
         spanEvent.setLine(beanInfo.getLineNumber());
         spanEvent.setSpanId(spanId);
+        spanEvent.setParam(Arrays.toString(invocation.getParameterTypes()) + ":" + Arrays.toString(invocation.getArguments()));
         span.push(spanEvent);
         //设置dubbo的attach数据
         attachments.put("traceId", traceId);

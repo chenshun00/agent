@@ -11,9 +11,9 @@ import top.huzhurong.test.common.trace.TraceContext;
  * @since 2019/5/26
  */
 public class Builder {
-    public static void buildContext(int index) {
+    public static SpanEvent buildContext(int index) {
         Trace<SpanEvent> trace = TraceContext.getContext();
-        if (trace == null) return;
+        if (trace == null) return null;
 
         Span<SpanEvent> span = trace.getSpan();
         BeanInfo beanInfo = BeanMethodRegister.get(index);
@@ -24,6 +24,7 @@ public class Builder {
         spanEvent.setLine(beanInfo.getLineNumber());
         spanEvent.setSpanId(span.getSpanId());
         span.push(spanEvent);
+        return spanEvent;
     }
 
     public static void handleOutTrace() {
@@ -56,10 +57,4 @@ public class Builder {
         spanEvent.setErrorStack(stringBuilder.toString());
         span.error = true;
     }
-
-    public static void handleTomcatOutTrace() {
-        //将所有的数据导出到http当中
-    }
-
-
 }

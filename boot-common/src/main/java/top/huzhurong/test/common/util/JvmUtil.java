@@ -1,5 +1,7 @@
 package top.huzhurong.test.common.util;
 
+import java.util.UUID;
+
 /**
  * @author chenshun00@gmail.com
  * @since 2019/2/23
@@ -9,7 +11,11 @@ public class JvmUtil {
         return javaName.replaceAll("\\.", "/");
     }
 
-    public static void main(String[] args) {
-        System.out.println(jvmName("abc.aaa.bbb"));
+    public static String createTraceId() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public static String createSpanId() {
+        return createTraceId();
     }
 }

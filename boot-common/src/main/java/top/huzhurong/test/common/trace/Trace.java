@@ -1,6 +1,6 @@
 package top.huzhurong.test.common.trace;
 
-import java.util.UUID;
+import top.huzhurong.test.common.util.JvmUtil;
 
 /**
  * @author chenshun00@gmail.com
@@ -13,7 +13,7 @@ public class Trace<T> {
     public Integer code;
 
     public static <T> Trace<T> newTrace(String request) {
-        return new Trace<T>(UUID.randomUUID().toString().replace("-", ""), request);
+        return new Trace<T>(JvmUtil.createTraceId(), request);
     }
 
     public Trace(String traceId, String request) {
