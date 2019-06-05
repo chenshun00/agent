@@ -1,14 +1,7 @@
 package top.huzhurong.plugin.impl.spring;
 
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import top.huzhurong.test.bootcore.BaseHook;
 import top.huzhurong.test.bootcore.bean.Builder;
-import top.huzhurong.test.common.log.AgentLog;
-import top.huzhurong.test.common.log.PLoggerFactory;
-import top.huzhurong.test.common.trace.Span;
-import top.huzhurong.test.common.trace.SpanEvent;
-import top.huzhurong.test.common.trace.Trace;
-import top.huzhurong.test.common.trace.TraceContext;
 
 /**
  * @author chenshun00@gmail.com
@@ -16,9 +9,7 @@ import top.huzhurong.test.common.trace.TraceContext;
  */
 public class BeanHook implements BaseHook {
 
-    private AgentLog logger = PLoggerFactory.getLogger(this.getClass());
-
-    public static BeanHook Instance = new BeanHook();
+    static BeanHook Instance = new BeanHook();
 
     @Override
     public void into(Object curObject, int index, Object[] args) {
@@ -27,24 +18,11 @@ public class BeanHook implements BaseHook {
 
     @Override
     public void out(Object result, Object cur, int index, Object[] args) {
-        Trace<SpanEvent> trace = TraceContext.getContext();
-        if (trace == null) return;
-        Span<SpanEvent> span = trace.getSpan();
-        SpanEvent spanEvent = span.pop();
-        spanEvent.setEndTime(System.currentTimeMillis());
-        try {
-            //需要多pop一次
-            if (cur.getClass().isAnnotationPresent(ControllerAdvice.class)) {
-                SpanEvent controllerEvent = span.pop();
-                controllerEvent.setEndTime(System.currentTimeMillis());
-            }
-        } catch (Exception ignore) {
-            logger.error("[处理span出现异常] [{}] [{}]", cur.getClass().getName(), args);
-        }
+        Builder.handleOutTrace();
     }
 
     @Override
     public void error(Throwable ex, int index, Object[] args) {
-
+        Builder.handleErrorTrace(ex);
     }
 }

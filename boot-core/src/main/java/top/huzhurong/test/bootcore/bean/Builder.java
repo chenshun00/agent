@@ -27,12 +27,13 @@ public class Builder {
         return spanEvent;
     }
 
-    public static void handleOutTrace() {
+    public static SpanEvent handleOutTrace() {
         Trace<SpanEvent> trace = TraceContext.getContext();
-        if (trace == null) return;
+        if (trace == null) return null;
         Span<SpanEvent> span = trace.getSpan();
         SpanEvent spanEvent = span.pop();
         spanEvent.setEndTime(System.currentTimeMillis());
+        return spanEvent;
     }
 
     /**
@@ -42,18 +43,15 @@ public class Builder {
      */
     public static void handleErrorTrace(Throwable ex) {
         if (ex == null) return;
-        Trace<SpanEvent> trace = (Trace<SpanEvent>) TraceContext.getContext();
+        Trace<SpanEvent> trace = TraceContext.getContext();
         if (trace == null) return;
         Span<SpanEvent> span = trace.getSpan();
         SpanEvent spanEvent = span.pop();
         spanEvent.setEndTime(System.currentTimeMillis());
-        if (span.error) {
-            return;
-        }
+        if (span.error) return;
         StringBuilder stringBuilder = new StringBuilder(256);
-        for (StackTraceElement stackTraceElement : ex.getStackTrace()) {
+        for (StackTraceElement stackTraceElement : ex.getStackTrace())
             stringBuilder.append(stackTraceElement.getFileName()).append("\t").append(stackTraceElement.getClassName()).append(".").append(stackTraceElement.getMethodName()).append("\n");
-        }
         spanEvent.setErrorStack(stringBuilder.toString());
         span.error = true;
     }

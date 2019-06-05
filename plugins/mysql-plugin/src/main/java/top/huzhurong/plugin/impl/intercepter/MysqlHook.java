@@ -23,7 +23,6 @@ public class MysqlHook implements BaseHook {
 
     @Override
     public void out(Object result, Object cur, int index, Object[] args) {
-        //Builder.handleOutTrace();
         Trace<SpanEvent> trace = TraceContext.getContext();
         if (trace == null) return;
         Span<SpanEvent> span = trace.getSpan();

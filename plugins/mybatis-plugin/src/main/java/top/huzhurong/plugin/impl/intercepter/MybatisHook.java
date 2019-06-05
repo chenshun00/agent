@@ -1,7 +1,9 @@
 package top.huzhurong.plugin.impl.intercepter;
 
+import org.apache.ibatis.executor.statement.PreparedStatementHandler;
 import top.huzhurong.test.bootcore.BaseHook;
 import top.huzhurong.test.bootcore.bean.Builder;
+import top.huzhurong.test.common.trace.SpanEvent;
 
 /**
  * @author chenshun00@gmail.com
@@ -18,7 +20,12 @@ public class MybatisHook implements BaseHook {
 
     @Override
     public void out(Object result, Object cur, int index, Object[] args) {
-        Builder.handleOutTrace();
+        SpanEvent spanEvent = Builder.handleOutTrace();
+        if (spanEvent == null) return;
+        PreparedStatementHandler preparedStatementHandler = (PreparedStatementHandler) cur;
+        String sql = preparedStatementHandler.getBoundSql().getSql();
+        sql = sql.replaceAll("\n", "").replaceAll("\\s+", " ");
+        spanEvent.setTag(sql);
     }
 
     @Override

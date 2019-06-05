@@ -54,7 +54,7 @@ public class DynamicTransformCallbackProvider implements TransformCallbackProvid
 
 
     @SuppressWarnings("unchecked")
-    public <T> Class<? extends T> injectClass(ClassLoader classLoader, String className) {
+    private <T> Class<? extends T> injectClass(ClassLoader classLoader, String className) {
         try {
             final URLClassLoader urlClassLoader = (URLClassLoader) classLoader;
             addPluginURLIfAbsent(urlClassLoader, className);
@@ -64,6 +64,7 @@ public class DynamicTransformCallbackProvider implements TransformCallbackProvid
         }
     }
 
+    //重复加载也没问题，内部会去重
     private synchronized void addPluginURLIfAbsent(URLClassLoader classLoader, String className) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
         URL url = profilerPluginPlugin.getURL();
         System.out.println("className:" + className + "\turl:" + url);
