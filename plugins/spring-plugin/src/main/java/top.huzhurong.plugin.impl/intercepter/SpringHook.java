@@ -4,9 +4,9 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import top.huzhurong.plugin.impl.spring.BeanMethodIntecepter;
 import top.huzhurong.test.bootcore.BaseHook;
+import top.huzhurong.test.bootcore.plugin.ProfilerPlugin;
 import top.huzhurong.test.bootcore.template.TranTemplate;
-import top.huzhurong.test.common.log.AgentLog;
-import top.huzhurong.test.common.log.PLoggerFactory;
+import top.huzhurong.test.common.plugin.Plugin;
 import top.huzhurong.test.common.util.JvmUtil;
 
 import java.util.Set;
@@ -20,9 +20,11 @@ import java.util.Set;
 public class SpringHook implements BaseHook {
 
     private TranTemplate tranTemplate;
+    private Plugin<ProfilerPlugin> pluginPlugin;
 
-    public SpringHook(TranTemplate tranTemplate) {
+    public SpringHook(TranTemplate tranTemplate, Plugin<ProfilerPlugin> pluginPlugin) {
         this.tranTemplate = tranTemplate;
+        this.pluginPlugin = pluginPlugin;
     }
 
     public static SpringHook Instance = null;
@@ -43,7 +45,7 @@ public class SpringHook implements BaseHook {
                 String beanClassName = beanDefinition.getBeanClassName();
                 String inf = JvmUtil.jvmName(beanClassName);
                 BeanMethodIntecepter beanMethodIntecepter = new BeanMethodIntecepter();
-                this.tranTemplate.addTranCallback(inf, beanMethodIntecepter.getClass());
+                this.tranTemplate.addTranCallback(inf, beanMethodIntecepter.getClass(), pluginPlugin);
             }
         }
     }

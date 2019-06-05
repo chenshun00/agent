@@ -1,16 +1,14 @@
 package top.huzhurong.test.other.plugin;
 
-import top.huzhurong.test.bootcore.AgentOption;
 import top.huzhurong.test.bootcore.TransformCallback;
+import top.huzhurong.test.bootcore.plugin.ProfilerPlugin;
+import top.huzhurong.test.common.plugin.Plugin;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.List;
 
 /**
  * @author chenshun00@gmail.com
@@ -21,11 +19,10 @@ public class DynamicTransformCallbackProvider implements TransformCallbackProvid
     private final String transformCallbackClassName;
     private final Object[] parameters;
     private final Class<?>[] parameterTypes;
-    private AgentOption agentOption;
+    private Plugin<ProfilerPlugin> profilerPluginPlugin;
 
 
     private static final Method ADD_URL;
-    private static Boolean trace = false;
 
     static {
         try {
@@ -36,17 +33,11 @@ public class DynamicTransformCallbackProvider implements TransformCallbackProvid
         }
     }
 
-    public DynamicTransformCallbackProvider(String transformCallbackClassName, Object[] parameters, Class<?>[] parameterTypes) {
-        this.transformCallbackClassName = transformCallbackClassName;
-        this.parameters = parameters;
-        this.parameterTypes = parameterTypes;
-    }
-
-    public DynamicTransformCallbackProvider(String transformCallbackClassName, AgentOption agentOption) {
+    public DynamicTransformCallbackProvider(String transformCallbackClassName, Plugin<ProfilerPlugin> profilerPluginPlugin) {
         this.transformCallbackClassName = transformCallbackClassName;
         this.parameters = null;
         this.parameterTypes = null;
-        this.agentOption = agentOption;
+        this.profilerPluginPlugin = profilerPluginPlugin;
     }
 
     @Override
@@ -74,24 +65,8 @@ public class DynamicTransformCallbackProvider implements TransformCallbackProvid
     }
 
     private synchronized void addPluginURLIfAbsent(URLClassLoader classLoader, String className) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-        List<String> pluginJars = agentOption.getPluginJars();
-        for (String pluginJar : pluginJars) {
-            String[] split = pluginJar.split("/");
-            String detail = split[split.length - 1];
-            String[] jarInfo = detail.split("-");
-            String jar = jarInfo[0];
-            if (className.toUpperCase().contains(jar.toUpperCase())) {
-                System.out.println("className:" + className + "\t" + pluginJar);
-                ADD_URL.invoke(classLoader, toUrl(new File(pluginJar)));
-            }
-        }
-    }
-
-    private static URL toUrl(File file) {
-        try {
-            return file.toURI().toURL();
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid URL:" + file);
-        }
+        URL url = profilerPluginPlugin.getURL();
+        System.out.println("className:" + className + "\turl:" + url);
+        ADD_URL.invoke(classLoader, url);
     }
 }

@@ -7,6 +7,7 @@ import top.huzhurong.test.bootcore.plugin.ProfilerPlugin;
 import top.huzhurong.test.bootcore.template.TranTemplate;
 import top.huzhurong.test.common.log.AgentLog;
 import top.huzhurong.test.common.log.PLoggerFactory;
+import top.huzhurong.test.common.plugin.Plugin;
 import top.huzhurong.test.common.util.JvmUtil;
 
 import java.security.ProtectionDomain;
@@ -20,17 +21,19 @@ public class MybatisTransformCallback implements ProfilerPlugin {
     private AgentLog logger = PLoggerFactory.getLogger(this.getClass());
 
     @Override
-    public void setTemplate(TranTemplate template) {
+    public String[] setTemplate(TranTemplate template, Plugin<ProfilerPlugin> transformCallbackPlugin) {
         if (template == null) {
             throw new NullPointerException("template 为空");
         }
         logger.info("[增加mybatis回调处理]");
-        template.addTranCallback(JvmUtil.jvmName("org.apache.ibatis.executor.statement.PreparedStatementHandler"), MybatisTransformCallback.MybatisUpdate.class);
+        String preparedStatementHandler = JvmUtil.jvmName("org.apache.ibatis.executor.statement.PreparedStatementHandler");
+        template.addTranCallback(preparedStatementHandler, MybatisTransformCallback.MybatisUpdate.class, transformCallbackPlugin);
+        return new String[]{preparedStatementHandler};
     }
 
     public static class MybatisUpdate implements TransformCallback {
         @Override
-        public byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
+        public byte[] doInTransform(TranTemplate tranTemplate, Plugin<ProfilerPlugin> pluginPlugin, ASMContext asmContext, ClassLoader classLoader, String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer) {
             String[] method = {"update", "query"};
             return asmContext.tranform(MybatisHook.Instance, method, null);
         }

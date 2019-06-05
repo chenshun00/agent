@@ -1,4 +1,4 @@
-package top.huzhurong.plugin.impl;
+package top.huzhurong.plugin.impl.intercepter;
 
 import top.huzhurong.test.bootcore.BaseHook;
 

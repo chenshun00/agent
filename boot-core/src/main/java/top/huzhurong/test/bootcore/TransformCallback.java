@@ -1,7 +1,9 @@
 package top.huzhurong.test.bootcore;
 
 import top.huzhurong.test.bootcore.asm.ASMContext;
+import top.huzhurong.test.bootcore.plugin.ProfilerPlugin;
 import top.huzhurong.test.bootcore.template.TranTemplate;
+import top.huzhurong.test.common.plugin.Plugin;
 
 import java.security.ProtectionDomain;
 
@@ -10,6 +12,8 @@ import java.security.ProtectionDomain;
  * @since 2019/2/20
  */
 public interface TransformCallback {
-    byte[] doInTransform(TranTemplate tranTemplate, ASMContext asmContext, ClassLoader classLoader,
+    byte[] doInTransform(TranTemplate tranTemplate, Plugin<ProfilerPlugin> pluginPlugin, ASMContext asmContext, ClassLoader classLoader,
                          String className, Class<?> classBeingRedefined, ProtectionDomain protectionDomain, byte[] classfileBuffer);
+
+
 }
