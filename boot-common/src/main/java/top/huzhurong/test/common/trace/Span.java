@@ -43,10 +43,14 @@ public class Span<T> {
         }
     }
 
+    //for local test
     public T getOne() {
         return otherStack.pop();
     }
 
+    public Stack<T> getAll() {
+        return otherStack;
+    }
 
     public int size() {
         return otherStack.size();

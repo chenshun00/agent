@@ -49,24 +49,25 @@ public class SentService {
     private static void handle(Trace<SpanEvent> trace) {
         logger.debug("[poll] [{}]", trace);
         try {
-            String traceId = trace.getTraceId();
             Span<SpanEvent> span = trace.getSpan();
-            int size = span.size();
-            List<SpanEvent> spanEvents = new ArrayList<SpanEvent>(size);
-            for (int i = 0; i < size; i++) {
-                spanEvents.add(span.getOne());
-            }
-            Collections.reverse(spanEvents);
-            Map<String, String> param = new HashMap<String, String>();
 
+            Stack<SpanEvent> all = span.getAll();
+            Collections.sort(all, new Comparator<SpanEvent>() {
+                @Override
+                public int compare(SpanEvent o1, SpanEvent o2) {
+                    return o1.getSequence() - o2.getSequence();
+                }
+            });
+
+            Map<String, String> param = new HashMap<String, String>();
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("traceId", traceId);
+            jsonObject.put("traceId", trace.getTraceId());
             jsonObject.put("spanId", span.getSpanId());
             jsonObject.put("parentSpanId", span.getParentSpanId());
             jsonObject.put("endpoint", span.getUrl());
             jsonObject.put("duration", span.getEndTime() - span.getStartTime());
             jsonObject.put("type", span.type);
-            jsonObject.put("stack", spanEvents);
+            jsonObject.put("stack", all);
             jsonObject.put("project", PROJECT_NAME);
             jsonObject.put("ip", PROJECT_IP);
             param.put("json", jsonObject.toJSONString());
