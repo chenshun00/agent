@@ -2,6 +2,8 @@ package top.huzhurong.test.common.trace;
 
 import top.huzhurong.test.common.util.JvmUtil;
 
+import java.util.Stack;
+
 /**
  * @author chenshun00@gmail.com
  * @since 2019/3/3
@@ -16,10 +18,15 @@ public class Span<T> {
     private String tag;
     private long startTime = System.currentTimeMillis();
     private long endTIme;
-    private BuilderStack<T> spanEventStack = new BuilderStack<T>();
+    private Stack<T> spanEventStack = new Stack<T>();
+    private Stack<T> otherStack = new Stack<T>();
 
     public void push(T t) {
         index++;
+        if (t instanceof SpanEvent) {
+            SpanEvent spanEvent = (SpanEvent) t;
+            spanEvent.setSequence((short) index);
+        }
         spanEventStack.push(t);
     }
 
@@ -27,28 +34,22 @@ public class Span<T> {
      * 先pop一次
      */
     public T pop() {
-        int temp = index;
         try {
-            while (true) {
-                SpanEvent pop = (SpanEvent) spanEventStack.pop(index);
-                if (!pop.handle) {
-                    pop.handle = true;
-                    return (T) pop;
-                }
-                index--;
-            }
+            T pop = spanEventStack.pop();
+            otherStack.push(pop);
+            return pop;
         } finally {
-            index = temp;
+            index--;
         }
     }
 
     public T getOne() {
-        return spanEventStack.getOne();
+        return otherStack.pop();
     }
 
 
     public int size() {
-        return spanEventStack.size();
+        return otherStack.size();
     }
 
     public String getTag() {

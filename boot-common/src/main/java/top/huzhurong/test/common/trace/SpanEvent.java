@@ -14,8 +14,20 @@ public class SpanEvent {
     private String param;
     private String errorStack;
     private String tag;
+    private short sequence;
     private long duration;
-    public boolean handle = false;
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public short getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(short sequence) {
+        this.sequence = sequence;
+    }
 
     public String getSpanId() {
         return spanId;
